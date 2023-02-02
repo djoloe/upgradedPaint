@@ -77,20 +77,20 @@ public class MainFrame {
 		springLayout.putConstraint(SpringLayout.NORTH, mnNewMenu, 0, SpringLayout.NORTH, mainFrm.getContentPane());
 		springLayout.putConstraint(SpringLayout.WEST, mnNewMenu, 144, SpringLayout.EAST, menuBar);
 		
-		JMenuItem mntmNewMenuItem = new JMenuItem("New");
-		mnNewMenu.add(mntmNewMenuItem);
+		JMenuItem newMenuItem = new JMenuItem("New");
+		mnNewMenu.add(newMenuItem);
 		
-		JMenuItem mntmNewMenuItem_1 = new JMenuItem("Open");
-		mnNewMenu.add(mntmNewMenuItem_1);
+		JMenuItem openMenuItem = new JMenuItem("Open");
+		mnNewMenu.add(openMenuItem);
 		
-		JMenuItem mntmNewMenuItem_2 = new JMenuItem("Save");
-		mnNewMenu.add(mntmNewMenuItem_2);
+		JMenuItem saveMenuItem = new JMenuItem("Save");
+		mnNewMenu.add(saveMenuItem);
 		
-		JMenu mnNewMenu_1 = new JMenu("Save as >");
-		mnNewMenu.add(mnNewMenu_1);
+		JMenu saveAsMenuItem = new JMenu("Save as >");
+		mnNewMenu.add(saveAsMenuItem);
 		
-		JMenu mnNewMenu_2 = new JMenu("Print >");
-		mnNewMenu.add(mnNewMenu_2);
+		JMenu printMenuItem = new JMenu("Print >");
+		mnNewMenu.add(printMenuItem);
 		mainFrm.setVisible(true);
 	
 		
