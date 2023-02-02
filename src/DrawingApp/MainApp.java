@@ -15,6 +15,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
+import DrawingApp.MainFrame;
+
 public class MainApp extends JPanel{
 
 	
