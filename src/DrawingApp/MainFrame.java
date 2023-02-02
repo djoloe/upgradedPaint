@@ -19,13 +19,15 @@ import javax.swing.JPanel;
 import javax.swing.SpringLayout;
 
 import geometry.Shape;
+import javax.swing.JMenuBar;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
 	
 public class MainFrame {
 	
 	private static MainFrame mainFrame;
 	private JFrame mainFrm;
-	private String[] choices = { "Point","Line", "Circle","Rectangle", "Donut", "Select"};
-	private JComboBox<String> comboBox;
+	private String[] choices = { "New","Open", "Save","Save as >", "Print > "};
 	private PnlDrawing pnlDrawing;
 	private String item;
 	private JPanel panel;
@@ -46,24 +48,16 @@ public class MainFrame {
 		mainFrm.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		SpringLayout springLayout = new SpringLayout();
 		mainFrm.getContentPane().setLayout(springLayout);
-		
-		comboBox = new JComboBox<String>(choices);
-		springLayout.putConstraint(SpringLayout.NORTH, comboBox, 0, SpringLayout.NORTH, mainFrm.getContentPane());
-		springLayout.putConstraint(SpringLayout.WEST, comboBox, 0, SpringLayout.WEST, mainFrm.getContentPane());
-		springLayout.putConstraint(SpringLayout.SOUTH, comboBox, 31, SpringLayout.NORTH, mainFrm.getContentPane());
-		springLayout.putConstraint(SpringLayout.EAST, comboBox, 200, SpringLayout.WEST, mainFrm.getContentPane());
 		comboBoxRenderer = new DefaultListCellRenderer();
 		comboBoxRenderer.setHorizontalAlignment(DefaultListCellRenderer.CENTER);
-		comboBox.setRenderer(comboBoxRenderer);
-		mainFrm.getContentPane().add(comboBox);
 		
 		
 		
 		pnlDrawing = new PnlDrawing();
-		springLayout.putConstraint(SpringLayout.NORTH, pnlDrawing, 0, SpringLayout.SOUTH, comboBox);
+		springLayout.putConstraint(SpringLayout.NORTH, pnlDrawing, 45, SpringLayout.NORTH, mainFrm.getContentPane());
 		springLayout.putConstraint(SpringLayout.WEST, pnlDrawing, 0, SpringLayout.WEST, mainFrm.getContentPane());
-		springLayout.putConstraint(SpringLayout.SOUTH, pnlDrawing, 66, SpringLayout.SOUTH, mainFrm.getContentPane());
-		springLayout.putConstraint(SpringLayout.EAST, pnlDrawing, 650, SpringLayout.WEST, mainFrm.getContentPane());
+		springLayout.putConstraint(SpringLayout.SOUTH, pnlDrawing, 0, SpringLayout.SOUTH, mainFrm.getContentPane());
+		springLayout.putConstraint(SpringLayout.EAST, pnlDrawing, 636, SpringLayout.WEST, mainFrm.getContentPane());
 		mainFrm.getContentPane().add(pnlDrawing);
 		
 		
@@ -71,18 +65,33 @@ public class MainFrame {
 		pnlDrawing.setBounds(0, 0, 66, 650);
 		pnlDrawing.setVisible(true);
 		pnlDrawing.setState(choices[0]);
+		
+		JMenuBar menuBar = new JMenuBar();
+		springLayout.putConstraint(SpringLayout.NORTH, menuBar, 0, SpringLayout.NORTH, mainFrm.getContentPane());
+		springLayout.putConstraint(SpringLayout.WEST, menuBar, 10, SpringLayout.WEST, mainFrm.getContentPane());
+		springLayout.putConstraint(SpringLayout.SOUTH, menuBar, -6, SpringLayout.NORTH, pnlDrawing);
+		mainFrm.getContentPane().add(menuBar);
+		
+		JMenu mnNewMenu = new JMenu("File");
+		menuBar.add(mnNewMenu);
+		springLayout.putConstraint(SpringLayout.NORTH, mnNewMenu, 0, SpringLayout.NORTH, mainFrm.getContentPane());
+		springLayout.putConstraint(SpringLayout.WEST, mnNewMenu, 144, SpringLayout.EAST, menuBar);
+		
+		JMenuItem mntmNewMenuItem = new JMenuItem("New");
+		mnNewMenu.add(mntmNewMenuItem);
+		
+		JMenuItem mntmNewMenuItem_1 = new JMenuItem("Open");
+		mnNewMenu.add(mntmNewMenuItem_1);
+		
+		JMenuItem mntmNewMenuItem_2 = new JMenuItem("Save");
+		mnNewMenu.add(mntmNewMenuItem_2);
+		
+		JMenu mnNewMenu_1 = new JMenu("Save as >");
+		mnNewMenu.add(mnNewMenu_1);
+		
+		JMenu mnNewMenu_2 = new JMenu("Print >");
+		mnNewMenu.add(mnNewMenu_2);
 		mainFrm.setVisible(true);
-		
-		
-		comboBox.addActionListener(new ActionListener() {
-	        @Override
-	        public void actionPerformed(ActionEvent e) {
-	        	if (e.getActionCommand() == "comboBoxChanged") {
-	        		item = (String) comboBox.getSelectedItem();
-	        		pnlDrawing.setState(item);
-	        	}
-	        }
-	    });
 	
 		
 	}
@@ -90,5 +99,4 @@ public class MainFrame {
 	public void refreshScreen() {
 		mainFrm.repaint(); 
 	}
-	
 }
