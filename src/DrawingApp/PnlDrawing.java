@@ -18,6 +18,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.border.CompoundBorder;
 import javax.swing.text.html.HTMLDocument.Iterator;
 
 import geometry.Circle;
@@ -42,13 +43,15 @@ public class PnlDrawing extends JPanel{
 	
 		pnlDrawing = this;
 		
-		//crtanje
 		this.addMouseListener(new MouseAdapter() {
 			
 			@Override
 			public void mousePressed(MouseEvent e) {
-				
-				
+				if(state == null) {
+					System.out.println("Select object to draw!");
+					return;
+				}
+				BottomPanel bottomPanel = BottomPanel.Instance();
 				switch (state) {
 				case "Select":
 					selectedShape = getSelectedShape(e.getX(), e.getY());
@@ -66,7 +69,7 @@ public class PnlDrawing extends JPanel{
 					p.setEdgecolor(colorPoint);	
 					shapes.add(p);
 					repaint();
-					
+					bottomPanel.setValuePointAtPaint(p, state);
 					break;
 					
 				case "Line":
@@ -82,12 +85,13 @@ public class PnlDrawing extends JPanel{
 						l.setEdgecolor(colorLine);	
 						shapes.add(l);
 						repaint();
+						bottomPanel.setValueLineAtPaint(l, state);
 						clearPoints();
 					}
 					break;
 					
 				case "Circle":
-					int radius  ;
+					int radius;
 					String textRadius;
 					Point p3;
 					try {
@@ -102,8 +106,8 @@ public class PnlDrawing extends JPanel{
 							c.setEdgecolor(circleEdgeColor);
 							c.setFillColor(circleFillColor);
 							shapes.add(c);
-							
 							repaint();
+							bottomPanel.setValueCircleAtPaint(c, state);
 							
 						}
 					} catch (Exception e2) {
@@ -128,6 +132,7 @@ public class PnlDrawing extends JPanel{
 							r.setEdgecolor(colorEdgeRect);
 							r.setFillColor(colorFillRect);
 							shapes.add(r);
+							bottomPanel.setValueRectAtPaint(r, state);
 							repaint();
 						}
 						
@@ -153,6 +158,7 @@ public class PnlDrawing extends JPanel{
 						d.setEdgecolor(colorDonut);
 						shapes.add(d);
 						repaint();
+						bottomPanel.setValueDonutAtPaint(d, state);
 						break;
 						}
 						
@@ -160,7 +166,8 @@ public class PnlDrawing extends JPanel{
 						System.out.println("Invalid input is 0 or you pressed cancel button!");
 						break;
 					}
-						
+				
+					
 				}
 			}
 			});
