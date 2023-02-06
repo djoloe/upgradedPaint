@@ -36,8 +36,9 @@ public class PnlDrawing extends JPanel{
 	private Frame f = new Frame();
 	private String shapeName;
 	private PnlDrawing pnlDrawing;
+	private Color selectedColor;
+	private Color fillColor;
 	private Shape selectedShape;
-	
 	
 	public PnlDrawing() {
 	
@@ -47,29 +48,20 @@ public class PnlDrawing extends JPanel{
 			
 			@Override
 			public void mousePressed(MouseEvent e) {
+
 				if(state == null) {
-					System.out.println("Select object to draw!");
 					return;
 				}
-				BottomPanel bottomPanel = BottomPanel.Instance();
+				BottomPanel bottomPanel = MainFrame.Instance().getBottomPanel();
+				
 				switch (state) {
-				case "Select":
-					selectedShape = getSelectedShape(e.getX(), e.getY());
-					if (selectedShape == null) {
-						break;
-					}
-					
-					EditPanel editPanel = new EditPanel(selectedShape,pnlDrawing);
-					editPanel.setSize(650, 450);
-					
-					break;					
+				
 				case "Point":
 					Point p = new Point(e.getX(), e.getY());
-					Color colorPoint = popUpColorChooser();
-					p.setEdgecolor(colorPoint);	
+					p.setColor(selectedColor);
 					shapes.add(p);
 					repaint();
-					bottomPanel.setValuePointAtPaint(p, state);
+					bottomPanel.setValuePointAtPaint(p);
 					break;
 					
 				case "Line":
@@ -79,13 +71,12 @@ public class PnlDrawing extends JPanel{
 						p2 = new Point(e.getX(), e.getY());
 					}
 					
-					if (p1 != null && p2 != null) {
-						Color colorLine = popUpColorChooser();
+					if (p1 != null && p2 != null) {				
 						Line l = new Line(p1, p2);
-						l.setEdgecolor(colorLine);	
+						l.setColor(selectedColor);
 						shapes.add(l);
 						repaint();
-						bottomPanel.setValueLineAtPaint(l, state);
+						bottomPanel.setValueLineAtPaint(l);
 						clearPoints();
 					}
 					break;
@@ -95,19 +86,17 @@ public class PnlDrawing extends JPanel{
 					String textRadius;
 					Point p3;
 					try {
-						Color circleEdgeColor = popUpColorChooser();
-						Color circleFillColor = popUpColorChooser();
 						p3 = new Point(e.getX(), e.getY());
 						textRadius = JOptionPane.showInputDialog(f,"Enter radius","");
 						if( textRadius != null || textRadius.length() > 0  ) {
 							radius = Integer.parseInt(textRadius);
 							Circle c = new Circle(p3,radius);
 							c.setCenter(p3);
-							c.setEdgecolor(circleEdgeColor);
-							c.setFillColor(circleFillColor);
+							c.setColor(selectedColor);
+							c.setFillColor(fillColor);
 							shapes.add(c);
 							repaint();
-							bottomPanel.setValueCircleAtPaint(c, state);
+							bottomPanel.setValueCircleAtPaint(c);
 							
 						}
 					} catch (Exception e2) {
@@ -120,8 +109,6 @@ public class PnlDrawing extends JPanel{
 					int width = 0;
 					int height = 0;
 					try {
-						Color colorEdgeRect = popUpColorChooser();
-						Color colorFillRect = popUpColorChooser();
 						Point p4 = new Point(e.getX(), e.getY());
 						String textWidth = JOptionPane.showInputDialog(f,"Enter width");
 						String textHeight = JOptionPane.showInputDialog(f,"Enter height");
@@ -129,10 +116,9 @@ public class PnlDrawing extends JPanel{
 							width = Integer.parseInt(textWidth);
 							height = Integer.parseInt(textHeight);
 							Rectangle r = new Rectangle(p4, width, height);
-							r.setEdgecolor(colorEdgeRect);
-							r.setFillColor(colorFillRect);
+							r.setColor(selectedColor);
 							shapes.add(r);
-							bottomPanel.setValueRectAtPaint(r, state);
+							bottomPanel.setValueRectAtPaint(r);
 							repaint();
 						}
 						
@@ -148,26 +134,28 @@ public class PnlDrawing extends JPanel{
 					int inner = 0;
 					int radius1 = 0;
 					try {
-						Color colorDonut = popUpColorChooser();
 						String textInner = JOptionPane.showInputDialog(f,"Enter inner");
 						String textRadius1 = JOptionPane.showInputDialog(f,"Enter radius");
 						if(textInner != null || textRadius1 != null) {
 						inner = Integer.parseInt(textInner);
 						radius1 = Integer.parseInt(textRadius1);
 						Donut d = new Donut(p5, radius1, inner);
-						d.setEdgecolor(colorDonut);
+						d.setColor(selectedColor);
 						shapes.add(d);
 						repaint();
-						bottomPanel.setValueDonutAtPaint(d, state);
-						break;
+						bottomPanel.setValueDonutAtPaint(d);
 						}
 						
 					} catch (Exception e2) {
 						System.out.println("Invalid input is 0 or you pressed cancel button!");
 						break;
 					}
+					break;
+				case "Edit":
+					selectedShape = getSelectedItem(e.getX(), e.getY());
+					bottomPanel.setShape(selectedShape);
+					break;
 				
-					
 				}
 			}
 			});
@@ -176,12 +164,7 @@ public class PnlDrawing extends JPanel{
 		
 	}
 	 
-	public Color popUpColorChooser() {
-		
-		Color initialColor = Color.black;
-		Color color = JColorChooser.showDialog(pnlDrawing, "select color", initialColor );
-		return color;
-	}
+	
 
 	
 	public void removeObject(Shape shape) {
@@ -191,7 +174,7 @@ public class PnlDrawing extends JPanel{
 		}
 	}
 	
-	private Shape getSelectedShape(int x, int y) {
+	public Shape getSelectedItem(int x, int y) {
 		Shape selectedItem = null;
 		
 		for (Shape shape : shapes) {
@@ -204,6 +187,13 @@ public class PnlDrawing extends JPanel{
 	 
 	
 	
+	public void setSelectedColor(Color color) {
+		this.selectedColor = color;
+	}
+	
+	public void setFillColor(Color color) {
+		this.fillColor = color;
+	}
 	
 	 public void paintComponent(Graphics g) {
 		 Graphics2D g2d = (Graphics2D) g;
@@ -221,9 +211,14 @@ public class PnlDrawing extends JPanel{
 		 this.state = state;
 	 }
 	 
+	 public String getState() {
+		 return state;
+	 }
 	 private void clearPoints() {
 		 p1 = null;
 		 p2 = null;
 	 }
+	 
+	
 }
 

@@ -7,11 +7,14 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SpringLayout;
 
+import org.w3c.dom.css.Rect;
+
 import geometry.Circle;
 import geometry.Donut;
 import geometry.Line;
 import geometry.Point;
 import geometry.Rectangle;
+import geometry.Shape;
 
 import javax.swing.JLabel;
 
@@ -36,8 +39,7 @@ public class BottomPanel {
 	private JTextField fieldWidth;
 	private JTextField fieldRadius;
 	private JTextField fieldInner;
-	private static BottomPanel bottomPanel;
-	
+	private Shape selectedShape;
 	
 	public BottomPanel(JPanel panel){
 		this.panel = panel;
@@ -134,15 +136,30 @@ public class BottomPanel {
 		
 	}
 	
-	public static BottomPanel Instance() {
-		if(bottomPanel == null) {
-			bottomPanel = new BottomPanel(panel);
-		} 
-		return bottomPanel;
-		
+	
+	public void setShape(Shape selectedShape) {
+		this.selectedShape = selectedShape;
 	}
 	
-	public void setValuePointAtPaint(Point p, String state) {
+	public void editValues() {
+		if(selectedShape instanceof Point) {
+			Point p = (Point) selectedShape;
+			setValuePointAtPaint(p);
+		} else if (selectedShape instanceof Line) {
+			Line l = (Line) selectedShape;
+			setValueLineAtPaint(l);
+		} else if (selectedShape instanceof Circle) {
+			Circle c = (Circle) selectedShape;
+			setValueCircleAtPaint(c);
+		} else if (selectedShape instanceof Rectangle) {
+			Rectangle r = (Rectangle) selectedShape;
+			setValueRectAtPaint(r);
+		} else if (selectedShape instanceof Donut) {
+			Donut d = (Donut) selectedShape;
+			setValueDonutAtPaint(d);
+		}
+	}
+	public void setValuePointAtPaint(Point p) {
 		hideAllComponents();
 		labelX1.setVisible(true);
 		labelY1.setVisible(true);
@@ -150,11 +167,11 @@ public class BottomPanel {
 		fieldY1.setVisible(true);
 		fieldX1.setText(Integer.toString(p.getX()));
 		fieldY1.setText(Integer.toString(p.getY()));
-		labelStateCurrent.setText(state);
+		labelStateCurrent.setText("Point");
 		
 	}
 	
-	public void setValueLineAtPaint(Line l, String state) {
+	public void setValueLineAtPaint(Line l) {
 		hideAllComponents();
 		labelX1.setVisible(true);
 		labelY1.setVisible(true);
@@ -168,10 +185,10 @@ public class BottomPanel {
 		fieldY1.setText(Integer.toString(l.getStartPoint().getY()));
 		fieldX2.setText(Integer.toString(l.getEndPoint().getX()));
 		fieldY2.setText(Integer.toString(l.getEndPoint().getY()));
-		labelStateCurrent.setText(state);
+		labelStateCurrent.setText("Line");
 	}
 	
-	public void setValueRectAtPaint(Rectangle r, String state) {
+	public void setValueRectAtPaint(Rectangle r) {
 		hideAllComponents();
 		labelX1.setVisible(true);
 		labelY1.setVisible(true);
@@ -185,10 +202,10 @@ public class BottomPanel {
 		fieldY1.setText(Integer.toString(r.getUpperLeft().getY()));
 		fieldWidth.setText(Integer.toString(r.getWidth()));
 		fieldHeight.setText(Integer.toString(r.getHeight()));
-		labelStateCurrent.setText(state);
+		labelStateCurrent.setText("Rectangle");
 	}
 	
-	public void setValueCircleAtPaint(Circle c, String state) {
+	public void setValueCircleAtPaint(Circle c) {
 		hideAllComponents();
 		labelX1.setVisible(true);
 		labelY1.setVisible(true);
@@ -199,10 +216,10 @@ public class BottomPanel {
 		labelRadius.setVisible(true);
 		fieldRadius.setText(Integer.toString(c.getRadius()));
 		fieldRadius.setVisible(true);
-		labelStateCurrent.setText(state);
+		labelStateCurrent.setText("Circle");
 	}
 	
-	public void setValueDonutAtPaint(Donut d, String state) {
+	public void setValueDonutAtPaint(Donut d) {
 		hideAllComponents();
 		labelX1.setVisible(true);
 		labelY1.setVisible(true);
@@ -216,7 +233,7 @@ public class BottomPanel {
 		fieldInner.setVisible(true);
 		fieldRadius.setText(Integer.toString(d.getRadius()));
 		fieldInner.setText(Integer.toString(d.getInnerRadius()));
-		labelStateCurrent.setText(state);
+		labelStateCurrent.setText("Donut");
 	}
 	
 	public void hideAllComponents() {
