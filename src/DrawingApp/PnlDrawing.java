@@ -39,7 +39,7 @@ public class PnlDrawing extends JPanel{
 	private Color selectedColor;
 	private Color fillColor;
 	private Shape selectedShape;
-	
+	private BottomPanel bottomPanel;
 	public PnlDrawing() {
 	
 		pnlDrawing = this;
@@ -52,7 +52,7 @@ public class PnlDrawing extends JPanel{
 				if(state == null) {
 					return;
 				}
-				BottomPanel bottomPanel = MainFrame.Instance().getBottomPanel();
+				 bottomPanel = MainFrame.Instance().getBottomPanel();
 				
 				switch (state) {
 				
@@ -97,10 +97,8 @@ public class PnlDrawing extends JPanel{
 							shapes.add(c);
 							repaint();
 							bottomPanel.setValueCircleAtPaint(c);
-							
 						}
 					} catch (Exception e2) {
-						System.out.println("Invalid input or you pressed cancel button!");
 						break;
 					}
 					break;
@@ -117,13 +115,13 @@ public class PnlDrawing extends JPanel{
 							height = Integer.parseInt(textHeight);
 							Rectangle r = new Rectangle(p4, width, height);
 							r.setColor(selectedColor);
+							r.setFillColor(fillColor);
 							shapes.add(r);
 							bottomPanel.setValueRectAtPaint(r);
 							repaint();
 						}
 						
 					} catch (Exception e2) {
-						System.out.println("Invalid input or you pressed cancel button!");
 						break;
 					}
 					break;
@@ -147,15 +145,13 @@ public class PnlDrawing extends JPanel{
 						}
 						
 					} catch (Exception e2) {
-						System.out.println("Invalid input is 0 or you pressed cancel button!");
 						break;
 					}
 					break;
-				case "Edit":
+				case "Select":
 					selectedShape = getSelectedItem(e.getX(), e.getY());
-					bottomPanel.setShape(selectedShape);
+					statusOfSelectObject();
 					break;
-				
 				}
 			}
 			});
@@ -165,7 +161,6 @@ public class PnlDrawing extends JPanel{
 	}
 	 
 	
-
 	
 	public void removeObject(Shape shape) {
 		shapes.remove(shape);
@@ -220,5 +215,24 @@ public class PnlDrawing extends JPanel{
 	 }
 	 
 	
+	 private void statusOfSelectObject() {
+			if(selectedShape instanceof Point) {
+				Point p = (Point) selectedShape;
+				bottomPanel.setValuePointAtPaint(p);
+			} else if (selectedShape instanceof Line) {
+				Line l = (Line) selectedShape;
+				bottomPanel.setValueLineAtPaint(l);
+			} else if (selectedShape instanceof Donut) {
+				Donut d = (Donut) selectedShape;
+				bottomPanel.setValueDonutAtPaint(d);
+			} else if (selectedShape instanceof Rectangle) {
+				Rectangle r = (Rectangle) selectedShape;
+				bottomPanel.setValueRectAtPaint(r);
+			} else if (selectedShape instanceof Circle) {
+				Circle c = (Circle) selectedShape;
+				bottomPanel.setValueCircleAtPaint(c);
+			} 
+		}
+	 
 }
 

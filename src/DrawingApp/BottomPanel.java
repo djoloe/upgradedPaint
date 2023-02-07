@@ -6,6 +6,8 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SpringLayout;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 import org.w3c.dom.css.Rect;
 
@@ -40,6 +42,7 @@ public class BottomPanel {
 	private JTextField fieldRadius;
 	private JTextField fieldInner;
 	private Shape selectedShape;
+	private String statusObject;
 	
 	public BottomPanel(JPanel panel){
 		this.panel = panel;
@@ -134,31 +137,25 @@ public class BottomPanel {
 		fieldInner.setVisible(false);
 		panel.add(fieldInner);
 		
+		
 	}
 	
+	
+	
+	
+	public void setStatusName(String statusObject) {
+		this.statusObject = statusObject;
+	}
 	
 	public void setShape(Shape selectedShape) {
 		this.selectedShape = selectedShape;
 	}
 	
-	public void editValues() {
-		if(selectedShape instanceof Point) {
-			Point p = (Point) selectedShape;
-			setValuePointAtPaint(p);
-		} else if (selectedShape instanceof Line) {
-			Line l = (Line) selectedShape;
-			setValueLineAtPaint(l);
-		} else if (selectedShape instanceof Circle) {
-			Circle c = (Circle) selectedShape;
-			setValueCircleAtPaint(c);
-		} else if (selectedShape instanceof Rectangle) {
-			Rectangle r = (Rectangle) selectedShape;
-			setValueRectAtPaint(r);
-		} else if (selectedShape instanceof Donut) {
-			Donut d = (Donut) selectedShape;
-			setValueDonutAtPaint(d);
-		}
-	}
+	
+	
+	
+	
+	
 	public void setValuePointAtPaint(Point p) {
 		hideAllComponents();
 		labelX1.setVisible(true);
@@ -254,4 +251,8 @@ public class BottomPanel {
 		fieldRadius.setVisible(false);
 		fieldInner.setVisible(false);
 	}
+	
+	
+	
 }
+
