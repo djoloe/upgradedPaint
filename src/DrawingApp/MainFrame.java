@@ -49,7 +49,7 @@ public class MainFrame {
 	private JMenu saveAsMenuItem;
 	private JMenu printMenuItem;
 	private JPanel bottomArea;
-	private BottomPanel bottomPanel;
+	private ShapeDetailsPanel detailsPanel;
 	private JButton buttonSelect;
 	
 	
@@ -64,7 +64,7 @@ public class MainFrame {
 	private MainFrame() {
 		
 		mainFrm = new JFrame();
-		mainFrm.setBounds(100, 100, 1102, 467);
+		mainFrm.setBounds(100, 100, 1102, 549);
 		mainFrm.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		SpringLayout springLayout = new SpringLayout();
 		mainFrm.getContentPane().setLayout(springLayout);
@@ -72,7 +72,7 @@ public class MainFrame {
 		
 		pnlDrawing = new PnlDrawing();
 		springLayout.putConstraint(SpringLayout.WEST, pnlDrawing, 0, SpringLayout.WEST, mainFrm.getContentPane());
-		springLayout.putConstraint(SpringLayout.SOUTH, pnlDrawing, -66, SpringLayout.SOUTH, mainFrm.getContentPane());
+		springLayout.putConstraint(SpringLayout.SOUTH, pnlDrawing, -129, SpringLayout.SOUTH, mainFrm.getContentPane());
 		springLayout.putConstraint(SpringLayout.EAST, pnlDrawing, 1088, SpringLayout.WEST, mainFrm.getContentPane());
 		mainFrm.getContentPane().add(pnlDrawing);
 		
@@ -80,15 +80,16 @@ public class MainFrame {
 		pnlDrawing.setVisible(true);
 		
 		
-
+		
 		
 		
 		
 		menuBar = new JMenuBar();
 		springLayout.putConstraint(SpringLayout.NORTH, pnlDrawing, 6, SpringLayout.SOUTH, menuBar);
 		springLayout.putConstraint(SpringLayout.NORTH, menuBar, 0, SpringLayout.NORTH, mainFrm.getContentPane());
-		springLayout.putConstraint(SpringLayout.SOUTH, menuBar, -374, SpringLayout.SOUTH, mainFrm.getContentPane());
+		springLayout.putConstraint(SpringLayout.SOUTH, menuBar, -450, SpringLayout.SOUTH, mainFrm.getContentPane());
 		springLayout.putConstraint(SpringLayout.WEST, menuBar, 10, SpringLayout.WEST, mainFrm.getContentPane());
+		menuBar.setPreferredSize(new Dimension(30,10));
 		mainFrm.getContentPane().add(menuBar);
 		
 		
@@ -106,7 +107,7 @@ public class MainFrame {
 		
 		JButton buttonLine = new JButton("Line");
 		springLayout.putConstraint(SpringLayout.NORTH, buttonLine, 0, SpringLayout.NORTH, mainFrm.getContentPane());
-		springLayout.putConstraint(SpringLayout.WEST, buttonLine, 6, SpringLayout.EAST, buttonPoint);
+		springLayout.putConstraint(SpringLayout.WEST, buttonLine, 150, SpringLayout.WEST, mainFrm.getContentPane());
 		springLayout.putConstraint(SpringLayout.SOUTH, buttonLine, -6, SpringLayout.NORTH, pnlDrawing);
 		buttonLine.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -170,13 +171,15 @@ public class MainFrame {
 		
 		bottomArea = new JPanel();
 		springLayout.putConstraint(SpringLayout.NORTH, bottomArea, 6, SpringLayout.SOUTH, pnlDrawing);
-		springLayout.putConstraint(SpringLayout.WEST, bottomArea, 0, SpringLayout.WEST, pnlDrawing);
+		springLayout.putConstraint(SpringLayout.WEST, bottomArea, 0, SpringLayout.WEST, mainFrm.getContentPane());
 		springLayout.putConstraint(SpringLayout.SOUTH, bottomArea, -10, SpringLayout.SOUTH, mainFrm.getContentPane());
-		springLayout.putConstraint(SpringLayout.EAST, bottomArea, 0, SpringLayout.EAST, pnlDrawing);
+		springLayout.putConstraint(SpringLayout.EAST, bottomArea, 0, SpringLayout.EAST, mainFrm.getContentPane());
 		mainFrm.getContentPane().add(bottomArea);
 		
+		
 		String state = pnlDrawing.getState();
-		bottomPanel = new BottomPanel(bottomArea);
+		detailsPanel = new ShapeDetailsPanel(bottomArea);
+		
 		
 		
 		JButton buttonColor = new JButton("Color");
@@ -194,9 +197,9 @@ public class MainFrame {
 		
 		JButton buttonFill = new JButton("Fill");
 		springLayout.putConstraint(SpringLayout.NORTH, buttonFill, 0, SpringLayout.NORTH, mainFrm.getContentPane());
-		springLayout.putConstraint(SpringLayout.WEST, buttonFill, 618, SpringLayout.WEST, mainFrm.getContentPane());
 		springLayout.putConstraint(SpringLayout.SOUTH, buttonFill, -6, SpringLayout.NORTH, pnlDrawing);
 		springLayout.putConstraint(SpringLayout.EAST, buttonColor, -6, SpringLayout.WEST, buttonFill);
+		springLayout.putConstraint(SpringLayout.WEST, buttonFill, 618, SpringLayout.WEST, mainFrm.getContentPane());
 		mainFrm.getContentPane().add(buttonFill);
 		buttonFill.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -207,28 +210,30 @@ public class MainFrame {
 		});
 		
 		JButton buttonDelete = new JButton("Delete");
-		springLayout.putConstraint(SpringLayout.NORTH, buttonDelete, 0, SpringLayout.NORTH, menuBar);
+		springLayout.putConstraint(SpringLayout.NORTH, buttonDelete, 0, SpringLayout.NORTH, mainFrm.getContentPane());
 		springLayout.putConstraint(SpringLayout.SOUTH, buttonDelete, -6, SpringLayout.NORTH, pnlDrawing);
 		springLayout.putConstraint(SpringLayout.EAST, buttonDelete, -174, SpringLayout.EAST, mainFrm.getContentPane());
 		mainFrm.getContentPane().add(buttonDelete);
 		
 		
 		JButton buttonEdit = new JButton("Edit");
-		springLayout.putConstraint(SpringLayout.WEST, buttonDelete, 6, SpringLayout.EAST, buttonEdit);
 		springLayout.putConstraint(SpringLayout.NORTH, buttonEdit, 0, SpringLayout.NORTH, mainFrm.getContentPane());
 		springLayout.putConstraint(SpringLayout.SOUTH, buttonEdit, -6, SpringLayout.NORTH, pnlDrawing);
+		springLayout.putConstraint(SpringLayout.WEST, buttonDelete, 6, SpringLayout.EAST, buttonEdit);
 		mainFrm.getContentPane().add(buttonEdit);
 		
 		buttonSelect = new JButton("Select");
-		springLayout.putConstraint(SpringLayout.WEST, buttonEdit, 6, SpringLayout.EAST, buttonSelect);
 		springLayout.putConstraint(SpringLayout.NORTH, buttonSelect, 0, SpringLayout.NORTH, mainFrm.getContentPane());
 		springLayout.putConstraint(SpringLayout.SOUTH, buttonSelect, -6, SpringLayout.NORTH, pnlDrawing);
-		springLayout.putConstraint(SpringLayout.EAST, buttonSelect, 87, SpringLayout.EAST, buttonFill);
+		springLayout.putConstraint(SpringLayout.WEST, buttonEdit, 6, SpringLayout.EAST, buttonSelect);
 		springLayout.putConstraint(SpringLayout.WEST, buttonSelect, 6, SpringLayout.EAST, buttonFill);
+		springLayout.putConstraint(SpringLayout.EAST, buttonSelect, -336, SpringLayout.EAST, mainFrm.getContentPane());
 		mainFrm.getContentPane().add(buttonSelect);
 		buttonSelect.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				pnlDrawing.setState("Select");
+				
+				
 			}
 		});
 		
@@ -249,8 +254,8 @@ public class MainFrame {
 		mainFrm.repaint(); 
 	}
 	
-	public BottomPanel getBottomPanel() {
-		return bottomPanel;
+	public ShapeDetailsPanel getDetailsPanel() {
+		return detailsPanel;
 	}
 	
 	

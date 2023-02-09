@@ -7,8 +7,12 @@ import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -20,6 +24,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.CompoundBorder;
 import javax.swing.text.html.HTMLDocument.Iterator;
+import javax.swing.Timer;
 
 import geometry.Circle;
 import geometry.Donut;
@@ -39,127 +44,158 @@ public class PnlDrawing extends JPanel{
 	private Color selectedColor;
 	private Color fillColor;
 	private Shape selectedShape;
-	private BottomPanel bottomPanel;
-	public PnlDrawing() {
+	private ShapeDetailsPanel detailsPanel;
+	private MouseEvent lastEvent;
+	private EditDialog editDialog;
 	
-		pnlDrawing = this;
-		
-		this.addMouseListener(new MouseAdapter() {
+	
+	 private Timer timer = new Timer(200, new ActionListener() {
 			
 			@Override
-			public void mousePressed(MouseEvent e) {
-
-				if(state == null) {
-					return;
-				}
-				 bottomPanel = MainFrame.Instance().getBottomPanel();
+			public void actionPerformed(ActionEvent e) {
 				
-				switch (state) {
-				
-				case "Point":
-					Point p = new Point(e.getX(), e.getY());
-					p.setColor(selectedColor);
-					shapes.add(p);
-					repaint();
-					bottomPanel.setValuePointAtPaint(p);
-					break;
-					
-				case "Line":
-					if (p1 == null) {
-						p1 = new Point(e.getX(), e.getY());
-					} else {
-						p2 = new Point(e.getX(), e.getY());
-					}
-					
-					if (p1 != null && p2 != null) {				
-						Line l = new Line(p1, p2);
-						l.setColor(selectedColor);
-						shapes.add(l);
-						repaint();
-						bottomPanel.setValueLineAtPaint(l);
-						clearPoints();
-					}
-					break;
-					
-				case "Circle":
-					int radius;
-					String textRadius;
-					Point p3;
-					try {
-						p3 = new Point(e.getX(), e.getY());
-						textRadius = JOptionPane.showInputDialog(f,"Enter radius","");
-						if( textRadius != null || textRadius.length() > 0  ) {
-							radius = Integer.parseInt(textRadius);
-							Circle c = new Circle(p3,radius);
-							c.setCenter(p3);
-							c.setColor(selectedColor);
-							c.setFillColor(fillColor);
-							shapes.add(c);
-							repaint();
-							bottomPanel.setValueCircleAtPaint(c);
-						}
-					} catch (Exception e2) {
-						break;
-					}
-					break;
-					
-				case "Rectangle":
-					int width = 0;
-					int height = 0;
-					try {
-						Point p4 = new Point(e.getX(), e.getY());
-						String textWidth = JOptionPane.showInputDialog(f,"Enter width");
-						String textHeight = JOptionPane.showInputDialog(f,"Enter height");
-						if(textWidth != null || textHeight != null) {
-							width = Integer.parseInt(textWidth);
-							height = Integer.parseInt(textHeight);
-							Rectangle r = new Rectangle(p4, width, height);
-							r.setColor(selectedColor);
-							r.setFillColor(fillColor);
-							shapes.add(r);
-							bottomPanel.setValueRectAtPaint(r);
-							repaint();
-						}
-						
-					} catch (Exception e2) {
-						break;
-					}
-					break;
-					
-				case "Donut":
-					
-					Point p5 = new Point(e.getX(), e.getY());
-					int inner = 0;
-					int radius1 = 0;
-					try {
-						String textInner = JOptionPane.showInputDialog(f,"Enter inner");
-						String textRadius1 = JOptionPane.showInputDialog(f,"Enter radius");
-						if(textInner != null || textRadius1 != null) {
-						inner = Integer.parseInt(textInner);
-						radius1 = Integer.parseInt(textRadius1);
-						Donut d = new Donut(p5, radius1, inner);
-						d.setColor(selectedColor);
-						shapes.add(d);
-						repaint();
-						bottomPanel.setValueDonutAtPaint(d);
-						}
-						
-					} catch (Exception e2) {
-						break;
-					}
-					break;
-				case "Select":
-					selectedShape = getSelectedItem(e.getX(), e.getY());
-					statusOfSelectObject();
-					break;
-				}
+				singleClick(lastEvent);
+				timer.stop();
 			}
-			});
+		});
+	
+	public PnlDrawing() {
+	
+		
+		this.addMouseListener(new MouseAdapter() {
+		
+			@Override
+			public void mousePressed(MouseEvent e) {
+				detailsPanel =  MainFrame.Instance().getDetailsPanel();
 				
-		
-		
+				if (timer.isRunning()) {
+					Shape shapeEdit = getSelectedItem(e.getX(), e.getY());
+					if (shapeEdit != null) {
+						EditDialog editDialog = new EditDialog(shapeEdit);
+						editDialog.setVisible(true);	
+					}
+					
+					timer.stop();
+		        } else {
+		        	lastEvent = e;
+		            timer.restart();
+		        }
+			}
+		});
+				
 	}
-	 
+	
+	
+	protected void singleClick(MouseEvent e) {
+		
+		if(state == null) {
+			return;
+		}
+		
+		
+		
+		switch (state) {
+		
+		case "Point":
+			Point p = new Point(e.getX(), e.getY());
+			p.setColor(selectedColor);
+			shapes.add(p);
+			repaint();
+			detailsPanel.setValuePointAtPaint(p);
+			break;
+			
+		case "Line":
+			if (p1 == null) {
+				p1 = new Point(e.getX(), e.getY());
+			} else {
+				p2 = new Point(e.getX(), e.getY());
+			}
+			
+			if (p1 != null && p2 != null) {				
+				Line l = new Line(p1, p2);
+				l.setColor(selectedColor);
+				shapes.add(l);
+				repaint();
+				detailsPanel.setValueLineAtPaint(l);
+				clearPoints();
+			}
+			break;
+			
+		case "Circle":
+			int radius;
+			String textRadius;
+			Point p3;
+			try {
+				p3 = new Point(e.getX(), e.getY());
+				textRadius = JOptionPane.showInputDialog(f,"Enter radius","");
+				if( textRadius != null || textRadius.length() > 0  ) {
+					radius = Integer.parseInt(textRadius);
+					Circle c = new Circle(p3,radius);
+					c.setCenter(p3);
+					c.setColor(selectedColor);
+					c.setFillColor(fillColor);
+					shapes.add(c);
+					repaint();
+					detailsPanel.setValueCircleAtPaint(c);
+				}
+			} catch (Exception e2) {
+				break;
+			}
+			break;
+			
+		case "Rectangle":
+			int width = 0;
+			int height = 0;
+			try {
+				Point p4 = new Point(e.getX(), e.getY());
+				String textWidth = JOptionPane.showInputDialog(f,"Enter width");
+				String textHeight = JOptionPane.showInputDialog(f,"Enter height");
+				if(textWidth != null || textHeight != null) {
+					width = Integer.parseInt(textWidth);
+					height = Integer.parseInt(textHeight);
+					Rectangle r = new Rectangle(p4, width, height);
+					r.setColor(selectedColor);
+					r.setFillColor(fillColor);
+					shapes.add(r);
+					detailsPanel.setValueRectAtPaint(r);
+					repaint();
+				}
+				
+			} catch (Exception e2) {
+				break;
+			}
+			break;
+			
+		case "Donut":
+			
+			Point p5 = new Point(e.getX(), e.getY());
+			int inner = 0;
+			int radius1 = 0;
+			try {
+				String textInner = JOptionPane.showInputDialog(f,"Enter inner");
+				String textRadius1 = JOptionPane.showInputDialog(f,"Enter radius");
+				if(textInner != null || textRadius1 != null) {
+				inner = Integer.parseInt(textInner);
+				radius1 = Integer.parseInt(textRadius1);
+				Donut d = new Donut(p5, radius1, inner);
+				d.setColor(selectedColor);
+				shapes.add(d);
+				repaint();
+				detailsPanel.setValueDonutAtPaint(d);
+				}
+				
+			} catch (Exception e2) {
+				break;
+			}
+			break;
+		case "Select":
+			selectedShape = getSelectedItem(e.getX(), e.getY());
+			break;
+		}
+	}
+	
+	
+	
 	
 	
 	public void removeObject(Shape shape) {
@@ -215,24 +251,7 @@ public class PnlDrawing extends JPanel{
 	 }
 	 
 	
-	 private void statusOfSelectObject() {
-			if(selectedShape instanceof Point) {
-				Point p = (Point) selectedShape;
-				bottomPanel.setValuePointAtPaint(p);
-			} else if (selectedShape instanceof Line) {
-				Line l = (Line) selectedShape;
-				bottomPanel.setValueLineAtPaint(l);
-			} else if (selectedShape instanceof Donut) {
-				Donut d = (Donut) selectedShape;
-				bottomPanel.setValueDonutAtPaint(d);
-			} else if (selectedShape instanceof Rectangle) {
-				Rectangle r = (Rectangle) selectedShape;
-				bottomPanel.setValueRectAtPaint(r);
-			} else if (selectedShape instanceof Circle) {
-				Circle c = (Circle) selectedShape;
-				bottomPanel.setValueCircleAtPaint(c);
-			} 
-		}
+	
 	 
 }
 
