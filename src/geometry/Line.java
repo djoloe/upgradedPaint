@@ -26,8 +26,9 @@ public class Line extends Shape {
 	}
 	
 	public boolean contains(int x, int y) {
-		return length() - (startPoint.distance(new Point(x,y))
-			+ endPoint.distance(new Point(x,y))) <= 2;
+		double lenght = Math.abs(length() - (startPoint.distance(new Point(x,y))
+				+ endPoint.distance(new Point(x,y))));
+		return lenght <= 2;
 	}
 	
 	@Override
@@ -49,7 +50,7 @@ public class Line extends Shape {
 	
 	@Override
 	public void draw(Graphics g) {
-		g.setColor(edgeColor);
+		g.setColor(color);
 		g.drawLine(startPoint.getX(), startPoint.getY(),
 				endPoint.getX(), endPoint.getY());
 	
@@ -57,7 +58,6 @@ public class Line extends Shape {
 	
 	public void moveBy(int byX, int byY) {
 		startPoint.moveBy(byX, byY);
-		//startPoint.setX(startPoint.getX()+byX));
 		endPoint.moveBy(byX, byY);
 	}
 
