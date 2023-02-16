@@ -37,6 +37,7 @@ public class ShapeDetailsPanel extends JPanel{
 	private JLabel labelInner;
 	private JLabel labelClass;
 	
+	
 	public ShapeDetailsPanel(JPanel panel) {
 		this.panel = panel;
 		SpringLayout sl_panel = new SpringLayout();
@@ -161,26 +162,15 @@ public class ShapeDetailsPanel extends JPanel{
 		panel.add(fieldInner);
 	}
 	
-	public ShapeDetailsPanel(JPanel panel, Shape shape) { 
-		this(panel);
-		if(shape instanceof Point) {
-			Point p = (Point) shape;
-			setValuePointAtPaint(p);
-		} else if (shape instanceof Line) {
-			Line l = (Line) shape;
-			setValueLineAtPaint(l);
-		} else if (shape instanceof Donut) {
-			Donut d = (Donut) shape;
-			setValueDonutAtPaint(d);
-		} else if (shape instanceof Rectangle) {
-			Rectangle r = (Rectangle) shape;
-			setValueRectAtPaint(r);
-		} else if (shape instanceof Circle) {
-			Circle c = (Circle) shape;
-			setValueCircleAtPaint(c);
-		} 
-	}
 	
+	
+	public ShapeDetailsPanel(JPanel contentPanel, Shape shape) {
+		this(contentPanel);
+		showDetails(shape);
+	}
+
+
+
 	public void setValuePointAtPaint(Point p) {
 		hideAllComponents();
 		labelX1.setVisible(true);
@@ -277,5 +267,24 @@ public class ShapeDetailsPanel extends JPanel{
 		fieldInner.setVisible(false);
 	}
 	
-
+	public void showDetails(Shape selectedShape) {
+		if(selectedShape instanceof Point) {
+			Point p = (Point) selectedShape;
+			setValuePointAtPaint(p);
+		} else if (selectedShape instanceof Line) {
+			Line l = (Line) selectedShape;
+			setValueLineAtPaint(l);
+		} else if (selectedShape instanceof Donut) {
+			Donut d = (Donut) selectedShape;
+			setValueDonutAtPaint(d);
+		} else if (selectedShape instanceof Rectangle) {
+			Rectangle r = (Rectangle) selectedShape;
+			setValueRectAtPaint(r);
+		} else if (selectedShape instanceof Circle) {
+			Circle c = (Circle) selectedShape;
+			setValueCircleAtPaint(c);
+		} 
+	}
+	
+	
 }

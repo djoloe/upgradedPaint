@@ -190,6 +190,9 @@ public class PnlDrawing extends JPanel{
 			break;
 		case "Select":
 			selectedShape = getSelectedItem(e.getX(), e.getY());
+			detailsPanel =  MainFrame.Instance().getDetailsPanel();
+			detailsPanel.showDetails(selectedShape);
+			
 			break;
 		}
 	}
