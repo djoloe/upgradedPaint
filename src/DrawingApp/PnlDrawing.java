@@ -253,8 +253,12 @@ public class PnlDrawing extends JPanel{
 		 p2 = null;
 	 }
 	 
+	public Shape getSelectedShape() {
+		return selectedShape;
+	}
 	
-	
-	 
+	public ArrayList<Shape> getShapeList(){
+		return shapes;
+	}
 }
 

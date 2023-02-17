@@ -80,10 +80,6 @@ public class MainFrame {
 		pnlDrawing.setVisible(true);
 		
 		
-		
-		
-		
-		
 		menuBar = new JMenuBar();
 		springLayout.putConstraint(SpringLayout.NORTH, pnlDrawing, 6, SpringLayout.SOUTH, menuBar);
 		springLayout.putConstraint(SpringLayout.NORTH, menuBar, 0, SpringLayout.NORTH, mainFrm.getContentPane());
@@ -91,7 +87,6 @@ public class MainFrame {
 		springLayout.putConstraint(SpringLayout.WEST, menuBar, 10, SpringLayout.WEST, mainFrm.getContentPane());
 		menuBar.setPreferredSize(new Dimension(30,10));
 		mainFrm.getContentPane().add(menuBar);
-		
 		
 		
 		JButton buttonPoint = new JButton("Point");
@@ -212,20 +207,23 @@ public class MainFrame {
 		JButton buttonDelete = new JButton("Delete");
 		springLayout.putConstraint(SpringLayout.NORTH, buttonDelete, 0, SpringLayout.NORTH, mainFrm.getContentPane());
 		springLayout.putConstraint(SpringLayout.SOUTH, buttonDelete, -6, SpringLayout.NORTH, pnlDrawing);
-		springLayout.putConstraint(SpringLayout.EAST, buttonDelete, -174, SpringLayout.EAST, mainFrm.getContentPane());
+		springLayout.putConstraint(SpringLayout.EAST, buttonDelete, -231, SpringLayout.EAST, mainFrm.getContentPane());
 		mainFrm.getContentPane().add(buttonDelete);
-		
-		
-		JButton buttonEdit = new JButton("Edit");
-		springLayout.putConstraint(SpringLayout.NORTH, buttonEdit, 0, SpringLayout.NORTH, mainFrm.getContentPane());
-		springLayout.putConstraint(SpringLayout.SOUTH, buttonEdit, -6, SpringLayout.NORTH, pnlDrawing);
-		springLayout.putConstraint(SpringLayout.WEST, buttonDelete, 6, SpringLayout.EAST, buttonEdit);
-		mainFrm.getContentPane().add(buttonEdit);
+		buttonDelete.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				
+				DeleteDialog deleteDialog = new DeleteDialog(pnlDrawing.getSelectedShape(),pnlDrawing.getShapeList());
+				deleteDialog.setVisible(true);
+				
+				
+			}
+		});
 		
 		buttonSelect = new JButton("Select");
+		springLayout.putConstraint(SpringLayout.WEST, buttonDelete, 6, SpringLayout.EAST, buttonSelect);
 		springLayout.putConstraint(SpringLayout.NORTH, buttonSelect, 0, SpringLayout.NORTH, mainFrm.getContentPane());
 		springLayout.putConstraint(SpringLayout.SOUTH, buttonSelect, -6, SpringLayout.NORTH, pnlDrawing);
-		springLayout.putConstraint(SpringLayout.WEST, buttonEdit, 6, SpringLayout.EAST, buttonSelect);
 		springLayout.putConstraint(SpringLayout.WEST, buttonSelect, 6, SpringLayout.EAST, buttonFill);
 		springLayout.putConstraint(SpringLayout.EAST, buttonSelect, -336, SpringLayout.EAST, mainFrm.getContentPane());
 		mainFrm.getContentPane().add(buttonSelect);
@@ -238,7 +236,6 @@ public class MainFrame {
 		});
 		
 		mainFrm.setVisible(true);
-		
 		
 		
 	}
