@@ -14,6 +14,8 @@ import javax.swing.SpringLayout;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
+import org.w3c.dom.css.Rect;
+
 import geometry.Circle;
 import geometry.Donut;
 import geometry.Line;
@@ -43,7 +45,13 @@ public class ShapeDetailsPanel extends JPanel{
 	private JLabel labelRadius;
 	private JLabel labelInner;
 	private JLabel labelClass;
-	
+	private String stringStatus;
+	private Point p;
+	private Line l;
+	private Circle c;
+	private Rectangle r;
+	private Donut d;
+	private Shape shape;
 	
 	
 	public ShapeDetailsPanel(JPanel panel) {
@@ -182,6 +190,7 @@ public class ShapeDetailsPanel extends JPanel{
 	public ShapeDetailsPanel(JPanel contentPanel, Shape shape) {
 		this(contentPanel);
 		whichShapeToPopulate(shape);
+		this.shape = shape;
 	}
 
 
@@ -282,59 +291,85 @@ public class ShapeDetailsPanel extends JPanel{
 		fieldInner.setVisible(false);
 	}
 	
-	public void whichShapeToPopulate(Shape shape) {
+	
+	
+	private void whichShape(Shape shape) {
 		if(shape instanceof Point) {
-			Point p = (Point) shape;
-			setValuePointAtPaint(p);
+			p = (Point) shape;
+			setStatus("Point");
 		} else if (shape instanceof Line) {
-			Line l = (Line) shape;
-			setValueLineAtPaint(l);
+			l = (Line) shape;
+			setStatus("Line");
 		} else if (shape instanceof Donut) {
-			Donut d = (Donut) shape;
-			setValueDonutAtPaint(d);
+			d = (Donut) shape;
+			setStatus("Donut");
 		} else if (shape instanceof Rectangle) {
-			Rectangle r = (Rectangle) shape;
-			setValueRectAtPaint(r);
+			r = (Rectangle) shape;
+			setStatus("Rectangle");
 		} else if (shape instanceof Circle) {
-			Circle c = (Circle) shape;
-			setValueCircleAtPaint(c);
+			c = (Circle) shape;
+			setStatus("Circle");
 		} 
+	}
+	
+	public void whichShapeToPopulate(Shape shape) {
+		whichShape(shape);
+		switch (stringStatus) {
+		case "Point":
+			setValuePointAtPaint(p);
+			break;
+		case "Line":
+			setValueLineAtPaint(l);
+			break;
+		case "Rectangle":
+			setValueRectAtPaint(r);
+			break;
+		case "Circle":
+			setValueCircleAtPaint(c);
+			break;
+		case "Donut":
+			setValueDonutAtPaint(d);
+			break;
+		}
 		
 	}
 	
-	
-	
-	public void enterNewValues(Shape shape) throws NumberFormatException, Exception {
-		if(shape instanceof Point) {
-			Point p = (Point) shape;
+	public void setNewValues() throws NumberFormatException, Exception {
+		whichShape(shape);
+		switch (stringStatus) {
+		case "Point": 
 			p.setX(Integer.parseInt(fieldX1.getText()));
 			p.setY(Integer.parseInt(fieldY1.getText()));
-		} else if (shape instanceof Line) {
-			Line l = (Line) shape;
+			break;
+		case "Line":
 			Point startPoint = new Point(Integer.parseInt(fieldX1.getText()), Integer.parseInt(fieldY1.getText()));
 			l.setStartPoint(startPoint);
 			Point endPoint = new Point(Integer.parseInt(fieldX2.getText()), Integer.parseInt(fieldY2.getText()));
 			l.setEndPoint(endPoint);
-		} else if (shape instanceof Donut) {
-			Donut d = (Donut) shape;
+			break;
+		case "Circle":
 			Point center = new Point(Integer.parseInt(fieldX1.getText()), Integer.parseInt(fieldY1.getText()));
-			d.setCenter(center);
-			d.setRadius(Integer.parseInt(fieldRadius.getText()));
-			d.setInnerRadius(Integer.parseInt(fieldInner.getText()));
-		} else if (shape instanceof Rectangle) {
-			Rectangle r = (Rectangle) shape;
+			c.setCenter(center);
+			c.setRadius(Integer.parseInt(fieldRadius.getText()));
+			break;
+		case "Rectangle":
 			Point upperLeft = new Point(Integer.parseInt(fieldX1.getText()), Integer.parseInt(fieldY1.getText()));
 			r.setUpperLeft(upperLeft);
 			r.setWidth(Integer.parseInt(fieldWidth.getText()));
 			r.setHeight(Integer.parseInt(fieldInner.getText()));
-		} else if (shape instanceof Circle) {
-			Circle c = (Circle) shape;
-			Point center = new Point(Integer.parseInt(fieldX1.getText()), Integer.parseInt(fieldY1.getText()));
-			c.setRadius(Integer.parseInt(fieldRadius.getText()));
-		} 
-		
+			break;
+		case "Donut":
+			Point centerDonut = new Point(Integer.parseInt(fieldX1.getText()), Integer.parseInt(fieldY1.getText()));
+			d.setCenter(centerDonut);
+			d.setRadius(Integer.parseInt(fieldRadius.getText()));
+			d.setInnerRadius(Integer.parseInt(fieldInner.getText()));
+			break;
+		}
+	
 	}
 	
-	
-	
+	private void setStatus(String string) {
+		this.stringStatus = string;
+		
+	}
 }

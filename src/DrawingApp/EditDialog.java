@@ -31,7 +31,7 @@ public class EditDialog extends JDialog {
 			btnNewButton.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					try {
-						detailsPanel.enterNewValues(shape);
+						detailsPanel.setNewValues();
 					} catch (Exception e1) {
 						e1.printStackTrace();
 					}
