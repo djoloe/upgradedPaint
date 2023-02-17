@@ -191,7 +191,7 @@ public class PnlDrawing extends JPanel{
 		case "Select":
 			selectedShape = getSelectedItem(e.getX(), e.getY());
 			detailsPanel =  MainFrame.Instance().getDetailsPanel();
-			detailsPanel.showDetails(selectedShape);
+			detailsPanel.whichShapeToPopulate(selectedShape);
 			
 			break;
 		}

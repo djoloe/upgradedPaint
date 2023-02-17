@@ -4,8 +4,15 @@ import javax.swing.JPanel;
 
 import java.awt.Color;
 import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+
 import javax.swing.JLabel;
 import javax.swing.SpringLayout;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 import geometry.Circle;
 import geometry.Donut;
@@ -36,6 +43,7 @@ public class ShapeDetailsPanel extends JPanel{
 	private JLabel labelRadius;
 	private JLabel labelInner;
 	private JLabel labelClass;
+	
 	
 	
 	public ShapeDetailsPanel(JPanel panel) {
@@ -77,6 +85,7 @@ public class ShapeDetailsPanel extends JPanel{
 		fieldX2.setColumns(10);
 		panel.add(fieldX2);
 		
+		
 		labelY1 = new JLabel("Y:");
 		sl_panel.putConstraint(SpringLayout.WEST, labelY1, 18, SpringLayout.EAST, fieldX1);
 		sl_panel.putConstraint(SpringLayout.SOUTH, labelY1, 0, SpringLayout.SOUTH, labelX1);
@@ -97,6 +106,7 @@ public class ShapeDetailsPanel extends JPanel{
 		panel.add(fieldY1);
 		fieldY1.setColumns(10);
 		
+		
 		fieldY2 = new JTextField();
 		sl_panel.putConstraint(SpringLayout.NORTH, fieldY2, -3, SpringLayout.NORTH, labelX2);
 		sl_panel.putConstraint(SpringLayout.WEST, fieldY2, 3, SpringLayout.EAST, labelY2);
@@ -104,6 +114,7 @@ public class ShapeDetailsPanel extends JPanel{
 		fieldY2.setVisible(false);
 		fieldY2.setColumns(10);
 		panel.add(fieldY2);
+		
 		
 		labelWidth = new JLabel("Width:");
 		sl_panel.putConstraint(SpringLayout.NORTH, labelWidth, 0, SpringLayout.NORTH, labelX1);
@@ -124,6 +135,7 @@ public class ShapeDetailsPanel extends JPanel{
 		panel.add(fieldWidth);
 		fieldWidth.setColumns(10);
 		
+		
 		fieldHeight = new JTextField();
 		sl_panel.putConstraint(SpringLayout.NORTH, fieldHeight, 14, SpringLayout.SOUTH, fieldWidth);
 		sl_panel.putConstraint(SpringLayout.EAST, fieldWidth, 0, SpringLayout.EAST, fieldHeight);
@@ -132,6 +144,7 @@ public class ShapeDetailsPanel extends JPanel{
 		fieldHeight.setVisible(false);
 		fieldHeight.setColumns(10);
 		panel.add(fieldHeight);
+		
 		
 		labelRadius = new JLabel("Radius:");
 		sl_panel.putConstraint(SpringLayout.NORTH, labelRadius, 0, SpringLayout.NORTH, labelX1);
@@ -153,6 +166,7 @@ public class ShapeDetailsPanel extends JPanel{
 		panel.add(fieldRadius);
 		fieldRadius.setColumns(10);
 		
+		
 		fieldInner = new JTextField();
 		sl_panel.putConstraint(SpringLayout.NORTH, fieldInner, 14, SpringLayout.SOUTH, fieldRadius);
 		sl_panel.putConstraint(SpringLayout.WEST, fieldInner, 13, SpringLayout.EAST, labelInner);
@@ -160,13 +174,14 @@ public class ShapeDetailsPanel extends JPanel{
 		fieldInner.setVisible(false);
 		fieldInner.setColumns(10);
 		panel.add(fieldInner);
+		
 	}
 	
 	
 	
 	public ShapeDetailsPanel(JPanel contentPanel, Shape shape) {
 		this(contentPanel);
-		showDetails(shape);
+		whichShapeToPopulate(shape);
 	}
 
 
@@ -267,24 +282,59 @@ public class ShapeDetailsPanel extends JPanel{
 		fieldInner.setVisible(false);
 	}
 	
-	public void showDetails(Shape selectedShape) {
-		if(selectedShape instanceof Point) {
-			Point p = (Point) selectedShape;
+	public void whichShapeToPopulate(Shape shape) {
+		if(shape instanceof Point) {
+			Point p = (Point) shape;
 			setValuePointAtPaint(p);
-		} else if (selectedShape instanceof Line) {
-			Line l = (Line) selectedShape;
+		} else if (shape instanceof Line) {
+			Line l = (Line) shape;
 			setValueLineAtPaint(l);
-		} else if (selectedShape instanceof Donut) {
-			Donut d = (Donut) selectedShape;
+		} else if (shape instanceof Donut) {
+			Donut d = (Donut) shape;
 			setValueDonutAtPaint(d);
-		} else if (selectedShape instanceof Rectangle) {
-			Rectangle r = (Rectangle) selectedShape;
+		} else if (shape instanceof Rectangle) {
+			Rectangle r = (Rectangle) shape;
 			setValueRectAtPaint(r);
-		} else if (selectedShape instanceof Circle) {
-			Circle c = (Circle) selectedShape;
+		} else if (shape instanceof Circle) {
+			Circle c = (Circle) shape;
 			setValueCircleAtPaint(c);
 		} 
+		
 	}
+	
+	
+	
+	public void enterNewValues(Shape shape) throws NumberFormatException, Exception {
+		if(shape instanceof Point) {
+			Point p = (Point) shape;
+			p.setX(Integer.parseInt(fieldX1.getText()));
+			p.setY(Integer.parseInt(fieldY1.getText()));
+		} else if (shape instanceof Line) {
+			Line l = (Line) shape;
+			Point startPoint = new Point(Integer.parseInt(fieldX1.getText()), Integer.parseInt(fieldY1.getText()));
+			l.setStartPoint(startPoint);
+			Point endPoint = new Point(Integer.parseInt(fieldX2.getText()), Integer.parseInt(fieldY2.getText()));
+			l.setEndPoint(endPoint);
+		} else if (shape instanceof Donut) {
+			Donut d = (Donut) shape;
+			Point center = new Point(Integer.parseInt(fieldX1.getText()), Integer.parseInt(fieldY1.getText()));
+			d.setCenter(center);
+			d.setRadius(Integer.parseInt(fieldRadius.getText()));
+			d.setInnerRadius(Integer.parseInt(fieldInner.getText()));
+		} else if (shape instanceof Rectangle) {
+			Rectangle r = (Rectangle) shape;
+			Point upperLeft = new Point(Integer.parseInt(fieldX1.getText()), Integer.parseInt(fieldY1.getText()));
+			r.setUpperLeft(upperLeft);
+			r.setWidth(Integer.parseInt(fieldWidth.getText()));
+			r.setHeight(Integer.parseInt(fieldInner.getText()));
+		} else if (shape instanceof Circle) {
+			Circle c = (Circle) shape;
+			Point center = new Point(Integer.parseInt(fieldX1.getText()), Integer.parseInt(fieldY1.getText()));
+			c.setRadius(Integer.parseInt(fieldRadius.getText()));
+		} 
+		
+	}
+	
 	
 	
 }
