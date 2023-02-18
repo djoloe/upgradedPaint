@@ -15,7 +15,7 @@ import geometry.Shape;
 public class EditDialog extends JDialog {
 
 	private JPanel contentPanel;
-	
+	private ShapeDetailsPanel detailsPanel;
 	public EditDialog(Shape shape) {
 		
 		setBounds(300,250, 450, 300);
@@ -26,26 +26,24 @@ public class EditDialog extends JDialog {
 			JPanel buttonPane = new JPanel();
 			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
 			getContentPane().add(buttonPane, BorderLayout.SOUTH);
-			{
-				JButton okButton = new JButton("OK");
-				okButton.setActionCommand("OK");
-				buttonPane.add(okButton);
-				getRootPane().setDefaultButton(okButton);
-			}
-			{
-				JButton cancelButton = new JButton("Cancel");
-				cancelButton.setActionCommand("Cancel");
-				cancelButton.addActionListener(new ActionListener() {
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						dispose();
+			
+			JButton btnNewButton = new JButton("Cancel");
+			btnNewButton.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					try {
+						detailsPanel.setNewValues();
+					} catch (Exception e1) {
+						e1.printStackTrace();
 					}
-				});
-				buttonPane.add(cancelButton);
-			}
+					dispose();
+				}
+			});
+			buttonPane.add(btnNewButton);
+			
+			
 		}
 		
-		ShapeDetailsPanel detailsPanel = new ShapeDetailsPanel(contentPanel, shape);
+		detailsPanel = new ShapeDetailsPanel(contentPanel, shape);
 		
 	}
 	

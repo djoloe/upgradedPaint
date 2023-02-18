@@ -4,8 +4,17 @@ import javax.swing.JPanel;
 
 import java.awt.Color;
 import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+
 import javax.swing.JLabel;
 import javax.swing.SpringLayout;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+
+import org.w3c.dom.css.Rect;
 
 import geometry.Circle;
 import geometry.Donut;
@@ -36,6 +45,13 @@ public class ShapeDetailsPanel extends JPanel{
 	private JLabel labelRadius;
 	private JLabel labelInner;
 	private JLabel labelClass;
+	private String stringStatus;
+	private Point p;
+	private Line l;
+	private Circle c;
+	private Rectangle r;
+	private Donut d;
+	private Shape shape;
 	
 	
 	public ShapeDetailsPanel(JPanel panel) {
@@ -77,6 +93,7 @@ public class ShapeDetailsPanel extends JPanel{
 		fieldX2.setColumns(10);
 		panel.add(fieldX2);
 		
+		
 		labelY1 = new JLabel("Y:");
 		sl_panel.putConstraint(SpringLayout.WEST, labelY1, 18, SpringLayout.EAST, fieldX1);
 		sl_panel.putConstraint(SpringLayout.SOUTH, labelY1, 0, SpringLayout.SOUTH, labelX1);
@@ -97,6 +114,7 @@ public class ShapeDetailsPanel extends JPanel{
 		panel.add(fieldY1);
 		fieldY1.setColumns(10);
 		
+		
 		fieldY2 = new JTextField();
 		sl_panel.putConstraint(SpringLayout.NORTH, fieldY2, -3, SpringLayout.NORTH, labelX2);
 		sl_panel.putConstraint(SpringLayout.WEST, fieldY2, 3, SpringLayout.EAST, labelY2);
@@ -104,6 +122,7 @@ public class ShapeDetailsPanel extends JPanel{
 		fieldY2.setVisible(false);
 		fieldY2.setColumns(10);
 		panel.add(fieldY2);
+		
 		
 		labelWidth = new JLabel("Width:");
 		sl_panel.putConstraint(SpringLayout.NORTH, labelWidth, 0, SpringLayout.NORTH, labelX1);
@@ -124,6 +143,7 @@ public class ShapeDetailsPanel extends JPanel{
 		panel.add(fieldWidth);
 		fieldWidth.setColumns(10);
 		
+		
 		fieldHeight = new JTextField();
 		sl_panel.putConstraint(SpringLayout.NORTH, fieldHeight, 14, SpringLayout.SOUTH, fieldWidth);
 		sl_panel.putConstraint(SpringLayout.EAST, fieldWidth, 0, SpringLayout.EAST, fieldHeight);
@@ -132,6 +152,7 @@ public class ShapeDetailsPanel extends JPanel{
 		fieldHeight.setVisible(false);
 		fieldHeight.setColumns(10);
 		panel.add(fieldHeight);
+		
 		
 		labelRadius = new JLabel("Radius:");
 		sl_panel.putConstraint(SpringLayout.NORTH, labelRadius, 0, SpringLayout.NORTH, labelX1);
@@ -153,6 +174,7 @@ public class ShapeDetailsPanel extends JPanel{
 		panel.add(fieldRadius);
 		fieldRadius.setColumns(10);
 		
+		
 		fieldInner = new JTextField();
 		sl_panel.putConstraint(SpringLayout.NORTH, fieldInner, 14, SpringLayout.SOUTH, fieldRadius);
 		sl_panel.putConstraint(SpringLayout.WEST, fieldInner, 13, SpringLayout.EAST, labelInner);
@@ -160,13 +182,15 @@ public class ShapeDetailsPanel extends JPanel{
 		fieldInner.setVisible(false);
 		fieldInner.setColumns(10);
 		panel.add(fieldInner);
+		
 	}
 	
 	
 	
 	public ShapeDetailsPanel(JPanel contentPanel, Shape shape) {
 		this(contentPanel);
-		showDetails(shape);
+		whichShapeToPopulate(shape);
+		this.shape = shape;
 	}
 
 
@@ -267,24 +291,85 @@ public class ShapeDetailsPanel extends JPanel{
 		fieldInner.setVisible(false);
 	}
 	
-	public void showDetails(Shape selectedShape) {
-		if(selectedShape instanceof Point) {
-			Point p = (Point) selectedShape;
-			setValuePointAtPaint(p);
-		} else if (selectedShape instanceof Line) {
-			Line l = (Line) selectedShape;
-			setValueLineAtPaint(l);
-		} else if (selectedShape instanceof Donut) {
-			Donut d = (Donut) selectedShape;
-			setValueDonutAtPaint(d);
-		} else if (selectedShape instanceof Rectangle) {
-			Rectangle r = (Rectangle) selectedShape;
-			setValueRectAtPaint(r);
-		} else if (selectedShape instanceof Circle) {
-			Circle c = (Circle) selectedShape;
-			setValueCircleAtPaint(c);
+	
+	
+	private void whichShape(Shape shape) {
+		if(shape instanceof Point) {
+			p = (Point) shape;
+			setStatus("Point");
+		} else if (shape instanceof Line) {
+			l = (Line) shape;
+			setStatus("Line");
+		} else if (shape instanceof Donut) {
+			d = (Donut) shape;
+			setStatus("Donut");
+		} else if (shape instanceof Rectangle) {
+			r = (Rectangle) shape;
+			setStatus("Rectangle");
+		} else if (shape instanceof Circle) {
+			c = (Circle) shape;
+			setStatus("Circle");
 		} 
 	}
 	
+	public void whichShapeToPopulate(Shape shape) {
+		whichShape(shape);
+		switch (stringStatus) {
+		case "Point":
+			setValuePointAtPaint(p);
+			break;
+		case "Line":
+			setValueLineAtPaint(l);
+			break;
+		case "Rectangle":
+			setValueRectAtPaint(r);
+			break;
+		case "Circle":
+			setValueCircleAtPaint(c);
+			break;
+		case "Donut":
+			setValueDonutAtPaint(d);
+			break;
+		}
+		
+	}
 	
+	public void setNewValues() throws NumberFormatException, Exception {
+		whichShape(shape);
+		switch (stringStatus) {
+		case "Point": 
+			p.setX(Integer.parseInt(fieldX1.getText()));
+			p.setY(Integer.parseInt(fieldY1.getText()));
+			break;
+		case "Line":
+			Point startPoint = new Point(Integer.parseInt(fieldX1.getText()), Integer.parseInt(fieldY1.getText()));
+			l.setStartPoint(startPoint);
+			Point endPoint = new Point(Integer.parseInt(fieldX2.getText()), Integer.parseInt(fieldY2.getText()));
+			l.setEndPoint(endPoint);
+			break;
+		case "Circle":
+			Point center = new Point(Integer.parseInt(fieldX1.getText()), Integer.parseInt(fieldY1.getText()));
+			c.setCenter(center);
+			c.setRadius(Integer.parseInt(fieldRadius.getText()));
+			break;
+		case "Rectangle":
+			Point upperLeft = new Point(Integer.parseInt(fieldX1.getText()), Integer.parseInt(fieldY1.getText()));
+			r.setUpperLeft(upperLeft);
+			r.setWidth(Integer.parseInt(fieldWidth.getText()));
+			r.setHeight(Integer.parseInt(fieldInner.getText()));
+			break;
+		case "Donut":
+			Point centerDonut = new Point(Integer.parseInt(fieldX1.getText()), Integer.parseInt(fieldY1.getText()));
+			d.setCenter(centerDonut);
+			d.setRadius(Integer.parseInt(fieldRadius.getText()));
+			d.setInnerRadius(Integer.parseInt(fieldInner.getText()));
+			break;
+		}
+	
+	}
+	
+	private void setStatus(String string) {
+		this.stringStatus = string;
+		
+	}
 }

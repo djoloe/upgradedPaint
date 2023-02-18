@@ -191,10 +191,11 @@ public class PnlDrawing extends JPanel{
 		case "Select":
 			selectedShape = getSelectedItem(e.getX(), e.getY());
 			detailsPanel =  MainFrame.Instance().getDetailsPanel();
-			detailsPanel.showDetails(selectedShape);
+			detailsPanel.whichShapeToPopulate(selectedShape);
 			
 			break;
 		}
+		
 	}
 	
 	
@@ -253,8 +254,12 @@ public class PnlDrawing extends JPanel{
 		 p2 = null;
 	 }
 	 
+	public Shape getSelectedShape() {
+		return selectedShape;
+	}
 	
-	
-	 
+	public ArrayList<Shape> getShapeList(){
+		return shapes;
+	}
 }
 
