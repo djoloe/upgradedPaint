@@ -195,6 +195,7 @@ public class PnlDrawing extends JPanel{
 			
 			break;
 		}
+		
 	}
 	
 	
