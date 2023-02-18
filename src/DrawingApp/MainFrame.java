@@ -212,11 +212,11 @@ public class MainFrame {
 		buttonDelete.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				
-				DeleteDialog deleteDialog = new DeleteDialog(pnlDrawing.getSelectedShape(),pnlDrawing.getShapeList());
+				Shape shape = pnlDrawing.getSelectedShape();
+				if(shape != null) {
+				DeleteDialog deleteDialog = new DeleteDialog(shape,pnlDrawing.getShapeList());
 				deleteDialog.setVisible(true);
-				
-				
+				} 
 			}
 		});
 		
