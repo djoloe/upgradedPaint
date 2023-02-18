@@ -94,7 +94,7 @@ public class MainFrame {
 		springLayout.putConstraint(SpringLayout.SOUTH, buttonPoint, -27, SpringLayout.NORTH, pnlDrawing);
 		buttonPoint.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				pnlDrawing.setState("Point");
+				pnlDrawing.setStatus(Status.Point);
 			}
 		});
 		mainFrm.getContentPane().add(buttonPoint);
@@ -106,7 +106,7 @@ public class MainFrame {
 		springLayout.putConstraint(SpringLayout.WEST, buttonLine, 150, SpringLayout.WEST, mainFrm.getContentPane());
 		buttonLine.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				pnlDrawing.setState("Line");
+				pnlDrawing.setStatus(Status.Line);
 			}
 		});
 		mainFrm.getContentPane().add(buttonLine);
@@ -117,7 +117,7 @@ public class MainFrame {
 		springLayout.putConstraint(SpringLayout.SOUTH, buttonRectangle, -27, SpringLayout.NORTH, pnlDrawing);
 		buttonRectangle.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				pnlDrawing.setState("Rectangle");
+				pnlDrawing.setStatus(Status.Rectangle);
 			}
 		});
 		mainFrm.getContentPane().add(buttonRectangle);
@@ -128,7 +128,7 @@ public class MainFrame {
 		springLayout.putConstraint(SpringLayout.NORTH, buttonCircle, 0, SpringLayout.NORTH, buttonPoint);
 		buttonCircle.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				pnlDrawing.setState("Circle");
+				pnlDrawing.setStatus(Status.Circle);
 			}
 		});
 		mainFrm.getContentPane().add(buttonCircle);
@@ -139,7 +139,7 @@ public class MainFrame {
 		springLayout.putConstraint(SpringLayout.NORTH, buttonDonut, 0, SpringLayout.NORTH, buttonPoint);
 		buttonDonut.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				pnlDrawing.setState("Donut");
+				pnlDrawing.setStatus(Status.Donut);
 			}
 		});
 		mainFrm.getContentPane().add(buttonDonut);
@@ -214,7 +214,7 @@ public class MainFrame {
 		buttonSelect.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				pnlDrawing.setState("Select");
+				pnlDrawing.setStatus(Status.Select);
 			}
 		});
 		

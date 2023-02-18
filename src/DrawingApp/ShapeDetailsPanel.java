@@ -45,7 +45,7 @@ public class ShapeDetailsPanel extends JPanel{
 	private JLabel labelRadius;
 	private JLabel labelInner;
 	private JLabel labelClass;
-	private String stringStatus;
+	private Status status;
 	private Point p;
 	private Line l;
 	private Circle c;
@@ -296,38 +296,38 @@ public class ShapeDetailsPanel extends JPanel{
 	private void whichShape(Shape shape) {
 		if(shape instanceof Point) {
 			p = (Point) shape;
-			setStatus("Point");
+			setStatus(Status.Point);
 		} else if (shape instanceof Line) {
 			l = (Line) shape;
-			setStatus("Line");
+			setStatus(Status.Line);
 		} else if (shape instanceof Donut) {
 			d = (Donut) shape;
-			setStatus("Donut");
+			setStatus(Status.Donut);
 		} else if (shape instanceof Rectangle) {
 			r = (Rectangle) shape;
-			setStatus("Rectangle");
+			setStatus(Status.Rectangle);
 		} else if (shape instanceof Circle) {
 			c = (Circle) shape;
-			setStatus("Circle");
+			setStatus(Status.Circle);
 		} 
 	}
 	
 	public void whichShapeToPopulate(Shape shape) {
 		whichShape(shape);
-		switch (stringStatus) {
-		case "Point":
+		switch (status) {
+		case Point:
 			setValuePointAtPaint(p);
 			break;
-		case "Line":
+		case Line:
 			setValueLineAtPaint(l);
 			break;
-		case "Rectangle":
+		case Rectangle:
 			setValueRectAtPaint(r);
 			break;
-		case "Circle":
+		case Circle:
 			setValueCircleAtPaint(c);
 			break;
-		case "Donut":
+		case Donut:
 			setValueDonutAtPaint(d);
 			break;
 		}
@@ -336,29 +336,29 @@ public class ShapeDetailsPanel extends JPanel{
 	
 	public void setNewValues() throws NumberFormatException, Exception {
 		whichShape(shape);
-		switch (stringStatus) {
-		case "Point": 
+		switch (status) {
+		case Point: 
 			p.setX(Integer.parseInt(fieldX1.getText()));
 			p.setY(Integer.parseInt(fieldY1.getText()));
 			break;
-		case "Line":
+		case Line:
 			Point startPoint = new Point(Integer.parseInt(fieldX1.getText()), Integer.parseInt(fieldY1.getText()));
 			l.setStartPoint(startPoint);
 			Point endPoint = new Point(Integer.parseInt(fieldX2.getText()), Integer.parseInt(fieldY2.getText()));
 			l.setEndPoint(endPoint);
 			break;
-		case "Circle":
+		case Circle:
 			Point center = new Point(Integer.parseInt(fieldX1.getText()), Integer.parseInt(fieldY1.getText()));
 			c.setCenter(center);
 			c.setRadius(Integer.parseInt(fieldRadius.getText()));
 			break;
-		case "Rectangle":
+		case Rectangle:
 			Point upperLeft = new Point(Integer.parseInt(fieldX1.getText()), Integer.parseInt(fieldY1.getText()));
 			r.setUpperLeft(upperLeft);
 			r.setWidth(Integer.parseInt(fieldWidth.getText()));
 			r.setHeight(Integer.parseInt(fieldInner.getText()));
 			break;
-		case "Donut":
+		case Donut:
 			Point centerDonut = new Point(Integer.parseInt(fieldX1.getText()), Integer.parseInt(fieldY1.getText()));
 			d.setCenter(centerDonut);
 			d.setRadius(Integer.parseInt(fieldRadius.getText()));
@@ -368,8 +368,8 @@ public class ShapeDetailsPanel extends JPanel{
 	
 	}
 	
-	private void setStatus(String string) {
-		this.stringStatus = string;
+	private void setStatus(Status status) {
+		this.status = status;
 		
 	}
 }

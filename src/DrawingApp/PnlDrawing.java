@@ -32,6 +32,7 @@ import geometry.Line;
 import geometry.Point;
 import geometry.Rectangle;
 import geometry.Shape;
+import DrawingApp.Status;
 
 public class PnlDrawing extends JPanel{
 
@@ -47,7 +48,7 @@ public class PnlDrawing extends JPanel{
 	private ShapeDetailsPanel detailsPanel;
 	private MouseEvent lastEvent;
 	private EditDialog editDialog;
-	
+	private Status status;
 	
 	 private Timer timer = new Timer(200, new ActionListener() {
 			
@@ -66,6 +67,9 @@ public class PnlDrawing extends JPanel{
 		
 			@Override
 			public void mousePressed(MouseEvent e) {
+				if(status == null) {
+					return;
+				}
 				detailsPanel =  MainFrame.Instance().getDetailsPanel();
 				
 				if (timer.isRunning()) {
@@ -88,15 +92,11 @@ public class PnlDrawing extends JPanel{
 	
 	protected void singleClick(MouseEvent e) {
 		
-		if(state == null) {
-			return;
-		}
+	
 		
+		switch (status) {
 		
-		
-		switch (state) {
-		
-		case "Point":
+		case Point:
 			Point p = new Point(e.getX(), e.getY());
 			p.setColor(selectedColor);
 			shapes.add(p);
@@ -104,7 +104,7 @@ public class PnlDrawing extends JPanel{
 			detailsPanel.setValuePointAtPaint(p);
 			break;
 			
-		case "Line":
+		case Line:
 			if (p1 == null) {
 				p1 = new Point(e.getX(), e.getY());
 			} else {
@@ -121,7 +121,7 @@ public class PnlDrawing extends JPanel{
 			}
 			break;
 			
-		case "Circle":
+		case Circle:
 			int radius;
 			String textRadius;
 			Point p3;
@@ -143,7 +143,7 @@ public class PnlDrawing extends JPanel{
 			}
 			break;
 			
-		case "Rectangle":
+		case Rectangle:
 			int width = 0;
 			int height = 0;
 			try {
@@ -166,7 +166,7 @@ public class PnlDrawing extends JPanel{
 			}
 			break;
 			
-		case "Donut":
+		case Donut:
 			
 			Point p5 = new Point(e.getX(), e.getY());
 			int inner = 0;
@@ -188,7 +188,7 @@ public class PnlDrawing extends JPanel{
 				break;
 			}
 			break;
-		case "Select":
+		case Select:
 			selectedShape = getSelectedItem(e.getX(), e.getY());
 			detailsPanel =  MainFrame.Instance().getDetailsPanel();
 			detailsPanel.whichShapeToPopulate(selectedShape);
@@ -241,9 +241,9 @@ public class PnlDrawing extends JPanel{
 		 
 	 }
 	 
-	 public void setState(String state) {
+	 public void setStatus(Status status) {
 		 clearPoints();
-		 this.state = state;
+		 this.status = status;
 	 }
 	 
 	 public String getState() {
@@ -262,4 +262,6 @@ public class PnlDrawing extends JPanel{
 		return shapes;
 	}
 }
+
+
 
