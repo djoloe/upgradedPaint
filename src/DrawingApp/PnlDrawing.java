@@ -1,28 +1,43 @@
 package DrawingApp;
 
 
+import java.awt.AWTException;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Robot;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.image.BufferStrategy;
+import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferInt;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Random;
 
+import javax.imageio.ImageIO;
 import javax.swing.JColorChooser;
 import javax.swing.JDialog;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.CompoundBorder;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.text.html.HTMLDocument.Iterator;
 import javax.swing.Timer;
 
@@ -40,8 +55,6 @@ public class PnlDrawing extends JPanel{
 	private String state;
 	private Point p1, p2;
 	private Frame f = new Frame();
-	private String shapeName;
-	private PnlDrawing pnlDrawing;
 	private Color selectedColor;
 	private Color fillColor;
 	private Shape selectedShape;
@@ -49,9 +62,12 @@ public class PnlDrawing extends JPanel{
 	private MouseEvent lastEvent;
 	private EditDialog editDialog;
 	private Status status;
+	private static int WIDTH = 800;
+	private static int HEIGHT = 800;
+	private ArrayList<Shape> newShapes;
+	private Timer timer = new Timer(200, new ActionListener() {
 	
-	 private Timer timer = new Timer(200, new ActionListener() {
-			
+	
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				
@@ -90,7 +106,7 @@ public class PnlDrawing extends JPanel{
 	}
 	
 	
-	protected void singleClick(MouseEvent e) {
+	private void singleClick(MouseEvent e) {
 		
 	
 		
@@ -198,9 +214,13 @@ public class PnlDrawing extends JPanel{
 		
 	}
 	
-	
-	
-	
+	public void repaintPanel() {
+		this.shapes = newShapes;
+		for (Shape shape : shapes) {
+		
+		}
+		this.repaint();
+	}
 	
 	public void removeObject(Shape shape) {
 		shapes.remove(shape);
@@ -219,7 +239,7 @@ public class PnlDrawing extends JPanel{
 		}
 		return selectedItem;
 	}
-	 
+	
 	
 	
 	public void setSelectedColor(Color color) {
@@ -230,6 +250,7 @@ public class PnlDrawing extends JPanel{
 		this.fillColor = color;
 	}
 	
+	@Override
 	 public void paintComponent(Graphics g) {
 		 Graphics2D g2d = (Graphics2D) g;
 		 
@@ -260,6 +281,60 @@ public class PnlDrawing extends JPanel{
 	
 	public ArrayList<Shape> getShapeList(){
 		return shapes;
+	}
+	
+//	 public void writeObjectArrayToFile() {
+//		 final String filepath = "C:\\Users\\Nikolic\\Desktop\\binarnifajl/fajl";
+//	        try {
+//	        	
+//	            FileOutputStream fileOut = new FileOutputStream(filepath);
+//	            ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
+//	            objectOut.writeObject(shapes);
+//	            objectOut.close();
+//	 
+//	        } catch (Exception ex) {
+//	            ex.printStackTrace();
+//	        }
+//	    }
+	
+	
+
+	public void saveWithFileChooser() {
+		JFileChooser chooser = new JFileChooser();
+		int result = chooser.showSaveDialog(null);
+		if(result == JFileChooser.APPROVE_OPTION) {
+			try {
+				File file = chooser.getSelectedFile();
+				FileOutputStream opf = new FileOutputStream(file);
+				ObjectOutputStream oop = new ObjectOutputStream(opf);
+				oop.writeObject(shapes);
+				oop.close();
+				System.out.println("sacuvano");
+			} catch (Exception e) {
+				// TODO: handle exception
+			}
+		}
+	}
+	
+	public void openWithFileChooser() {
+		JFileChooser chooser = new JFileChooser();
+		int result = chooser.showOpenDialog(null);
+        if(result == JFileChooser.APPROVE_OPTION)
+        {
+            try
+            {
+             File file = chooser.getSelectedFile();
+        	FileInputStream fis = new FileInputStream(file);
+   			ObjectInputStream ois = new ObjectInputStream(fis);
+   			newShapes = (ArrayList<Shape>) ois.readObject();
+            
+            }
+            catch(Exception io)
+            {
+                System.exit(1);
+            }   
+        }
+	
 	}
 }
 

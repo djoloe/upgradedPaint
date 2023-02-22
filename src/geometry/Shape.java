@@ -2,11 +2,12 @@ package geometry;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.io.Serializable;
 
 import DrawingApp.PnlDrawing;
 
 
-public abstract class Shape implements Moveable, Comparable{
+public abstract class Shape implements Moveable, Comparable,Serializable{
 	
 	protected boolean selected;
 	protected Color color;

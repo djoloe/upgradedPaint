@@ -9,6 +9,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
+import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.SpringLayout;
 import javax.swing.event.DocumentEvent;
@@ -58,7 +59,7 @@ public class ShapeDetailsPanel extends JPanel{
 		this.panel = panel;
 		SpringLayout sl_panel = new SpringLayout();
 		panel.setLayout(sl_panel);
-	
+		panel.setBorder(BorderFactory.createLineBorder(Color.black));
 		
 		labelClass = new JLabel("");
 		sl_panel.putConstraint(SpringLayout.NORTH, labelClass, 10, SpringLayout.NORTH, panel);
