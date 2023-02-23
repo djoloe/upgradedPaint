@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import javax.imageio.ImageIO;
+import javax.swing.JButton;
 import javax.swing.JColorChooser;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
@@ -39,6 +40,7 @@ import javax.swing.JPanel;
 import javax.swing.border.CompoundBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.text.html.HTMLDocument.Iterator;
+import javax.swing.undo.UndoManager;
 import javax.swing.Timer;
 
 import geometry.Circle;
@@ -65,6 +67,9 @@ public class PnlDrawing extends JPanel{
 	private static int WIDTH = 800;
 	private static int HEIGHT = 800;
 	private ArrayList<Shape> newShapes;
+	private ArrayList<Shape> redoList = new ArrayList<>();
+	private Shape shapeToRedo;
+	
 	private Timer timer = new Timer(200, new ActionListener() {
 	
 	
@@ -102,7 +107,8 @@ public class PnlDrawing extends JPanel{
 		        }
 			}
 		});
-				
+			
+		
 	}
 	
 	
@@ -210,8 +216,71 @@ public class PnlDrawing extends JPanel{
 			detailsPanel.whichShapeToPopulate(selectedShape);
 			
 			break;
+			
 		}
 		
+	}
+	public void saveWithFileChooser() {
+		JFileChooser chooser = new JFileChooser();
+		int result = chooser.showSaveDialog(null);
+		if(result == JFileChooser.APPROVE_OPTION) {
+			try {
+				File file = chooser.getSelectedFile();
+				FileOutputStream opf = new FileOutputStream(file);
+				ObjectOutputStream oop = new ObjectOutputStream(opf);
+				oop.writeObject(shapes);
+				oop.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	public void openWithFileChooser() {
+		JFileChooser chooser = new JFileChooser();
+		int result = chooser.showOpenDialog(null);
+        if(result == JFileChooser.APPROVE_OPTION)
+        {
+            try
+            {
+             File file = chooser.getSelectedFile();
+        	FileInputStream fis = new FileInputStream(file);
+   			ObjectInputStream ois = new ObjectInputStream(fis);
+   			newShapes = (ArrayList<Shape>) ois.readObject();
+            
+            }
+            catch(Exception io)
+            {
+                io.printStackTrace();
+            }   
+        }
+	
+	}
+	
+	public void undo() {
+		if(shapes.size() > 0) {
+			int index = shapes.size() - 1;
+			shapeToRedo = shapes.get(index);
+			addToRedoList();
+			shapes.remove(index);
+		}
+	}
+
+	public void redo() {
+		if(redoList.size() > 0) {
+		int redoIndex = redoList.size() - 1;
+		shapes.add(redoList.get(redoIndex));
+		redoList.remove(redoIndex);
+		}
+	}
+	
+	private void addToRedoList() {
+		redoList.add(shapeToRedo);
+	}
+
+	public void clearPanel() {
+		shapes.clear();
+		this.repaint();
 	}
 	
 	public void repaintPanel() {
@@ -283,59 +352,10 @@ public class PnlDrawing extends JPanel{
 		return shapes;
 	}
 	
-//	 public void writeObjectArrayToFile() {
-//		 final String filepath = "C:\\Users\\Nikolic\\Desktop\\binarnifajl/fajl";
-//	        try {
-//	        	
-//	            FileOutputStream fileOut = new FileOutputStream(filepath);
-//	            ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
-//	            objectOut.writeObject(shapes);
-//	            objectOut.close();
-//	 
-//	        } catch (Exception ex) {
-//	            ex.printStackTrace();
-//	        }
-//	    }
 	
 	
-
-	public void saveWithFileChooser() {
-		JFileChooser chooser = new JFileChooser();
-		int result = chooser.showSaveDialog(null);
-		if(result == JFileChooser.APPROVE_OPTION) {
-			try {
-				File file = chooser.getSelectedFile();
-				FileOutputStream opf = new FileOutputStream(file);
-				ObjectOutputStream oop = new ObjectOutputStream(opf);
-				oop.writeObject(shapes);
-				oop.close();
-				System.out.println("sacuvano");
-			} catch (Exception e) {
-				// TODO: handle exception
-			}
-		}
-	}
 	
-	public void openWithFileChooser() {
-		JFileChooser chooser = new JFileChooser();
-		int result = chooser.showOpenDialog(null);
-        if(result == JFileChooser.APPROVE_OPTION)
-        {
-            try
-            {
-             File file = chooser.getSelectedFile();
-        	FileInputStream fis = new FileInputStream(file);
-   			ObjectInputStream ois = new ObjectInputStream(fis);
-   			newShapes = (ArrayList<Shape>) ois.readObject();
-            
-            }
-            catch(Exception io)
-            {
-                System.exit(1);
-            }   
-        }
 	
-	}
 }
 
 
