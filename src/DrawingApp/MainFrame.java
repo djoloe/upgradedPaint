@@ -68,8 +68,6 @@ public class MainFrame {
 	private ShapeDetailsPanel detailsPanel;
 	private JButton buttonSelect;
 	private Image image;
-	private JButton undoButton;
-	private JButton redoButton;
 	
 	public static MainFrame Instance() {
 		if (mainFrame == null) {
@@ -82,7 +80,7 @@ public class MainFrame {
 	private MainFrame() {
 		
 		mainFrm = new JFrame();
-		mainFrm.setBounds(100, 100, 1053, 549);
+		mainFrm.setBounds(100, 100, 950, 549);
 		mainFrm.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		SpringLayout springLayout = new SpringLayout();
 		mainFrm.getContentPane().setLayout(springLayout);
@@ -142,9 +140,9 @@ public class MainFrame {
 		mainFrm.getContentPane().add(buttonRectangle);
 		
 		JButton buttonCircle = new JButton("Circle");
-		springLayout.putConstraint(SpringLayout.EAST, buttonRectangle, -6, SpringLayout.WEST, buttonCircle);
 		springLayout.putConstraint(SpringLayout.NORTH, buttonCircle, 10, SpringLayout.NORTH, mainFrm.getContentPane());
 		springLayout.putConstraint(SpringLayout.SOUTH, buttonCircle, -6, SpringLayout.NORTH, pnlDrawing);
+		springLayout.putConstraint(SpringLayout.EAST, buttonRectangle, -6, SpringLayout.WEST, buttonCircle);
 		buttonCircle.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				pnlDrawing.setStatus(Status.Circle);
@@ -153,9 +151,9 @@ public class MainFrame {
 		mainFrm.getContentPane().add(buttonCircle);
 		
 		JButton buttonDonut = new JButton("Donut");
-		springLayout.putConstraint(SpringLayout.EAST, buttonCircle, -6, SpringLayout.WEST, buttonDonut);
 		springLayout.putConstraint(SpringLayout.NORTH, buttonDonut, 10, SpringLayout.NORTH, mainFrm.getContentPane());
 		springLayout.putConstraint(SpringLayout.SOUTH, buttonDonut, -6, SpringLayout.NORTH, pnlDrawing);
+		springLayout.putConstraint(SpringLayout.EAST, buttonCircle, -6, SpringLayout.WEST, buttonDonut);
 		buttonDonut.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				pnlDrawing.setStatus(Status.Donut);
@@ -212,10 +210,10 @@ public class MainFrame {
 		
 		
 		JButton buttonColor = new JButton("Color");
-		springLayout.putConstraint(SpringLayout.WEST, buttonColor, 496, SpringLayout.WEST, mainFrm.getContentPane());
-		springLayout.putConstraint(SpringLayout.EAST, buttonDonut, -43, SpringLayout.WEST, buttonColor);
+		springLayout.putConstraint(SpringLayout.EAST, buttonDonut, -81, SpringLayout.WEST, buttonColor);
 		springLayout.putConstraint(SpringLayout.NORTH, buttonColor, 0, SpringLayout.NORTH, buttonPoint);
-		springLayout.putConstraint(SpringLayout.SOUTH, buttonColor, 0, SpringLayout.SOUTH, buttonPoint);
+		springLayout.putConstraint(SpringLayout.WEST, buttonColor, 534, SpringLayout.WEST, mainFrm.getContentPane());
+		springLayout.putConstraint(SpringLayout.SOUTH, buttonColor, -6, SpringLayout.NORTH, pnlDrawing);
 		buttonColor.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				 Color color = popUpColorChooser();
@@ -226,8 +224,7 @@ public class MainFrame {
 		
 		JButton buttonFill = new JButton("Fill");
 		springLayout.putConstraint(SpringLayout.EAST, buttonColor, -6, SpringLayout.WEST, buttonFill);
-		springLayout.putConstraint(SpringLayout.NORTH, buttonFill, 10, SpringLayout.NORTH, mainFrm.getContentPane());
-		springLayout.putConstraint(SpringLayout.WEST, buttonFill, 595, SpringLayout.WEST, mainFrm.getContentPane());
+		springLayout.putConstraint(SpringLayout.NORTH, buttonFill, 0, SpringLayout.NORTH, buttonPoint);
 		springLayout.putConstraint(SpringLayout.SOUTH, buttonFill, -6, SpringLayout.NORTH, pnlDrawing);
 		mainFrm.getContentPane().add(buttonFill);
 		buttonFill.addActionListener(new ActionListener() {
@@ -239,8 +236,9 @@ public class MainFrame {
 		});
 		
 		buttonSelect = new JButton("Select");
+		springLayout.putConstraint(SpringLayout.WEST, buttonSelect, 684, SpringLayout.WEST, mainFrm.getContentPane());
+		springLayout.putConstraint(SpringLayout.EAST, buttonFill, -6, SpringLayout.WEST, buttonSelect);
 		springLayout.putConstraint(SpringLayout.NORTH, buttonSelect, 10, SpringLayout.NORTH, mainFrm.getContentPane());
-		springLayout.putConstraint(SpringLayout.WEST, buttonSelect, 6, SpringLayout.EAST, buttonFill);
 		springLayout.putConstraint(SpringLayout.SOUTH, buttonSelect, -6, SpringLayout.NORTH, pnlDrawing);
 		mainFrm.getContentPane().add(buttonSelect);
 		buttonSelect.addActionListener(new ActionListener() {
@@ -268,8 +266,9 @@ public class MainFrame {
 		
 		JButton btnClear = new JButton("Clear");
 		springLayout.putConstraint(SpringLayout.EAST, buttonDelete, -6, SpringLayout.WEST, btnClear);
-		springLayout.putConstraint(SpringLayout.NORTH, btnClear, 10, SpringLayout.NORTH, mainFrm.getContentPane());
+		springLayout.putConstraint(SpringLayout.NORTH, btnClear, 0, SpringLayout.NORTH, buttonPoint);
 		springLayout.putConstraint(SpringLayout.SOUTH, btnClear, -6, SpringLayout.NORTH, pnlDrawing);
+		springLayout.putConstraint(SpringLayout.EAST, btnClear, -29, SpringLayout.EAST, mainFrm.getContentPane());
 		mainFrm.getContentPane().add(btnClear);
 		btnClear.addActionListener(new ActionListener() {
 			@Override
@@ -277,29 +276,6 @@ public class MainFrame {
 				pnlDrawing.clearPanel();
 			}
 		});
-		
-		undoButton = new JButton("Undo");
-		springLayout.putConstraint(SpringLayout.NORTH, undoButton, 10, SpringLayout.NORTH, mainFrm.getContentPane());
-		springLayout.putConstraint(SpringLayout.SOUTH, undoButton, -6, SpringLayout.NORTH, pnlDrawing);
-		springLayout.putConstraint(SpringLayout.EAST, btnClear, -6, SpringLayout.WEST, undoButton);
-		undoButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				pnlDrawing.undo();
-			}
-		});
-		mainFrm.getContentPane().add(undoButton);
-		
-		redoButton = new JButton("Redo");
-		springLayout.putConstraint(SpringLayout.NORTH, redoButton, 10, SpringLayout.NORTH, mainFrm.getContentPane());
-		springLayout.putConstraint(SpringLayout.SOUTH, redoButton, -6, SpringLayout.NORTH, pnlDrawing);
-		springLayout.putConstraint(SpringLayout.EAST, undoButton, -6, SpringLayout.WEST, redoButton);
-		springLayout.putConstraint(SpringLayout.EAST, redoButton, -22, SpringLayout.EAST, mainFrm.getContentPane());
-		redoButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				pnlDrawing.redo();
-			}
-		});
-		mainFrm.getContentPane().add(redoButton);
 		
 		mainFrm.setVisible(true);
 		

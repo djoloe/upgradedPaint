@@ -35,8 +35,10 @@ import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.border.CompoundBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.text.html.HTMLDocument.Iterator;
@@ -78,6 +80,7 @@ public class PnlDrawing extends JPanel{
 				
 				singleClick(lastEvent);
 				timer.stop();
+				
 			}
 		});
 	
@@ -90,7 +93,9 @@ public class PnlDrawing extends JPanel{
 			public void mousePressed(MouseEvent e) {
 				if(status == null) {
 					return;
-				}
+				} 
+				
+		        
 				detailsPanel =  MainFrame.Instance().getDetailsPanel();
 				
 				if (timer.isRunning()) {
@@ -101,9 +106,11 @@ public class PnlDrawing extends JPanel{
 					}
 					
 					timer.stop();
-		        } else {
+		        } else if(e.getButton() == MouseEvent.BUTTON1){
 		        	lastEvent = e;
 		            timer.restart();
+		        } else if(e.getButton() == MouseEvent.BUTTON3){
+		        	rightClick(e);
 		        }
 			}
 		});
@@ -111,6 +118,30 @@ public class PnlDrawing extends JPanel{
 		
 	}
 	
+	private void rightClick(MouseEvent e) {
+		final JPopupMenu popupMenu =  new JPopupMenu();
+		
+		JMenuItem undo = new JMenuItem("Undo");
+		undo.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				undo();
+			}
+		});
+		popupMenu.add(undo);
+		
+		JMenuItem redo = new JMenuItem("Redo");
+		redo.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				redo();
+			}
+		});
+		popupMenu.add(redo);
+		
+		this.setComponentPopupMenu(popupMenu);
+		popupMenu.setVisible(true);
+	}
 	
 	private void singleClick(MouseEvent e) {
 		
@@ -220,6 +251,8 @@ public class PnlDrawing extends JPanel{
 		}
 		
 	}
+	
+	
 	public void saveWithFileChooser() {
 		JFileChooser chooser = new JFileChooser();
 		int result = chooser.showSaveDialog(null);
@@ -277,6 +310,7 @@ public class PnlDrawing extends JPanel{
 	private void addToRedoList() {
 		redoList.add(shapeToRedo);
 	}
+	
 
 	public void clearPanel() {
 		shapes.clear();
