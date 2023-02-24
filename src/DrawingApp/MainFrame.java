@@ -63,11 +63,11 @@ public class MainFrame {
 	private JMenuItem openMenuItem;
 	private JMenuItem saveMenuItem;
 	private JMenu saveAsMenuItem;
-	private JMenu printMenuItem;
 	private JPanel bottomArea;
 	private ShapeDetailsPanel detailsPanel;
 	private JButton buttonSelect;
 	private Image image;
+	private JMenuItem printMenuItem;
 	
 	public static MainFrame Instance() {
 		if (mainFrame == null) {
@@ -109,6 +109,7 @@ public class MainFrame {
 		JButton buttonPoint = new JButton("Point");
 		springLayout.putConstraint(SpringLayout.NORTH, buttonPoint, 10, SpringLayout.NORTH, mainFrm.getContentPane());
 		springLayout.putConstraint(SpringLayout.SOUTH, buttonPoint, -6, SpringLayout.NORTH, pnlDrawing);
+		springLayout.putConstraint(SpringLayout.EAST, buttonPoint, -768, SpringLayout.EAST, mainFrm.getContentPane());
 		buttonPoint.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				pnlDrawing.setStatus(Status.Point);
@@ -117,9 +118,9 @@ public class MainFrame {
 		mainFrm.getContentPane().add(buttonPoint);
 		
 		JButton buttonLine = new JButton("Line");
-		springLayout.putConstraint(SpringLayout.EAST, buttonPoint, -6, SpringLayout.WEST, buttonLine);
-		springLayout.putConstraint(SpringLayout.SOUTH, buttonLine, 0, SpringLayout.SOUTH, buttonPoint);
 		springLayout.putConstraint(SpringLayout.NORTH, buttonLine, 0, SpringLayout.NORTH, buttonPoint);
+		springLayout.putConstraint(SpringLayout.WEST, buttonLine, 6, SpringLayout.EAST, buttonPoint);
+		springLayout.putConstraint(SpringLayout.SOUTH, buttonLine, -6, SpringLayout.NORTH, pnlDrawing);
 		buttonLine.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				pnlDrawing.setStatus(Status.Line);
@@ -128,10 +129,10 @@ public class MainFrame {
 		mainFrm.getContentPane().add(buttonLine);
 		
 		JButton buttonRectangle = new JButton("Rectangle");
-		springLayout.putConstraint(SpringLayout.EAST, buttonLine, -6, SpringLayout.WEST, buttonRectangle);
-		springLayout.putConstraint(SpringLayout.WEST, buttonRectangle, 211, SpringLayout.WEST, mainFrm.getContentPane());
-		springLayout.putConstraint(SpringLayout.SOUTH, buttonRectangle, 0, SpringLayout.SOUTH, buttonPoint);
 		springLayout.putConstraint(SpringLayout.NORTH, buttonRectangle, 0, SpringLayout.NORTH, buttonPoint);
+		springLayout.putConstraint(SpringLayout.WEST, buttonRectangle, 6, SpringLayout.EAST, buttonLine);
+		springLayout.putConstraint(SpringLayout.SOUTH, buttonRectangle, -6, SpringLayout.NORTH, pnlDrawing);
+		springLayout.putConstraint(SpringLayout.EAST, buttonRectangle, -593, SpringLayout.EAST, mainFrm.getContentPane());
 		buttonRectangle.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				pnlDrawing.setStatus(Status.Rectangle);
@@ -141,8 +142,8 @@ public class MainFrame {
 		
 		JButton buttonCircle = new JButton("Circle");
 		springLayout.putConstraint(SpringLayout.NORTH, buttonCircle, 10, SpringLayout.NORTH, mainFrm.getContentPane());
+		springLayout.putConstraint(SpringLayout.WEST, buttonCircle, 6, SpringLayout.EAST, buttonRectangle);
 		springLayout.putConstraint(SpringLayout.SOUTH, buttonCircle, -6, SpringLayout.NORTH, pnlDrawing);
-		springLayout.putConstraint(SpringLayout.EAST, buttonRectangle, -6, SpringLayout.WEST, buttonCircle);
 		buttonCircle.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				pnlDrawing.setStatus(Status.Circle);
@@ -152,8 +153,8 @@ public class MainFrame {
 		
 		JButton buttonDonut = new JButton("Donut");
 		springLayout.putConstraint(SpringLayout.NORTH, buttonDonut, 10, SpringLayout.NORTH, mainFrm.getContentPane());
+		springLayout.putConstraint(SpringLayout.WEST, buttonDonut, 6, SpringLayout.EAST, buttonCircle);
 		springLayout.putConstraint(SpringLayout.SOUTH, buttonDonut, -6, SpringLayout.NORTH, pnlDrawing);
-		springLayout.putConstraint(SpringLayout.EAST, buttonCircle, -6, SpringLayout.WEST, buttonDonut);
 		buttonDonut.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				pnlDrawing.setStatus(Status.Donut);
@@ -167,6 +168,12 @@ public class MainFrame {
 		springLayout.putConstraint(SpringLayout.WEST, menuFile, 144, SpringLayout.EAST, menuBar);
 		
 		newMenuItem = new JMenuItem("New");
+		newMenuItem.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				pnlDrawing.clearPanel();
+			}
+		});
 		menuFile.add(newMenuItem);
 		
 		openMenuItem = new JMenuItem("Open");
@@ -191,7 +198,12 @@ public class MainFrame {
 		saveAsMenuItem = new JMenu("Save as >");
 		menuFile.add(saveAsMenuItem);
 		
-		printMenuItem = new JMenu("Print >");
+		printMenuItem = new JMenuItem("Save as png");
+		printMenuItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				pnlDrawing.saveImage();
+			}
+		});
 		menuFile.add(printMenuItem);
 		
 		bottomArea = new JPanel();
@@ -210,10 +222,10 @@ public class MainFrame {
 		
 		
 		JButton buttonColor = new JButton("Color");
-		springLayout.putConstraint(SpringLayout.EAST, buttonDonut, -81, SpringLayout.WEST, buttonColor);
-		springLayout.putConstraint(SpringLayout.NORTH, buttonColor, 0, SpringLayout.NORTH, buttonPoint);
-		springLayout.putConstraint(SpringLayout.WEST, buttonColor, 534, SpringLayout.WEST, mainFrm.getContentPane());
+		springLayout.putConstraint(SpringLayout.NORTH, buttonColor, 10, SpringLayout.NORTH, mainFrm.getContentPane());
+		springLayout.putConstraint(SpringLayout.WEST, buttonColor, 99, SpringLayout.EAST, buttonDonut);
 		springLayout.putConstraint(SpringLayout.SOUTH, buttonColor, -6, SpringLayout.NORTH, pnlDrawing);
+		springLayout.putConstraint(SpringLayout.EAST, buttonColor, -271, SpringLayout.EAST, mainFrm.getContentPane());
 		buttonColor.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				 Color color = popUpColorChooser();
@@ -223,8 +235,8 @@ public class MainFrame {
 		mainFrm.getContentPane().add(buttonColor);
 		
 		JButton buttonFill = new JButton("Fill");
-		springLayout.putConstraint(SpringLayout.EAST, buttonColor, -6, SpringLayout.WEST, buttonFill);
-		springLayout.putConstraint(SpringLayout.NORTH, buttonFill, 0, SpringLayout.NORTH, buttonPoint);
+		springLayout.putConstraint(SpringLayout.NORTH, buttonFill, 10, SpringLayout.NORTH, mainFrm.getContentPane());
+		springLayout.putConstraint(SpringLayout.WEST, buttonFill, 6, SpringLayout.EAST, buttonColor);
 		springLayout.putConstraint(SpringLayout.SOUTH, buttonFill, -6, SpringLayout.NORTH, pnlDrawing);
 		mainFrm.getContentPane().add(buttonFill);
 		buttonFill.addActionListener(new ActionListener() {
@@ -236,10 +248,10 @@ public class MainFrame {
 		});
 		
 		buttonSelect = new JButton("Select");
-		springLayout.putConstraint(SpringLayout.WEST, buttonSelect, 684, SpringLayout.WEST, mainFrm.getContentPane());
-		springLayout.putConstraint(SpringLayout.EAST, buttonFill, -6, SpringLayout.WEST, buttonSelect);
-		springLayout.putConstraint(SpringLayout.NORTH, buttonSelect, 10, SpringLayout.NORTH, mainFrm.getContentPane());
+		springLayout.putConstraint(SpringLayout.NORTH, buttonSelect, 0, SpringLayout.NORTH, buttonPoint);
+		springLayout.putConstraint(SpringLayout.WEST, buttonSelect, 6, SpringLayout.EAST, buttonFill);
 		springLayout.putConstraint(SpringLayout.SOUTH, buttonSelect, -6, SpringLayout.NORTH, pnlDrawing);
+		springLayout.putConstraint(SpringLayout.EAST, buttonSelect, -121, SpringLayout.EAST, mainFrm.getContentPane());
 		mainFrm.getContentPane().add(buttonSelect);
 		buttonSelect.addActionListener(new ActionListener() {
 			@Override
@@ -249,8 +261,8 @@ public class MainFrame {
 		});
 		
 		JButton buttonDelete = new JButton("Delete");
-		springLayout.putConstraint(SpringLayout.EAST, buttonSelect, -6, SpringLayout.WEST, buttonDelete);
-		springLayout.putConstraint(SpringLayout.NORTH, buttonDelete, 10, SpringLayout.NORTH, mainFrm.getContentPane());
+		springLayout.putConstraint(SpringLayout.NORTH, buttonDelete, 0, SpringLayout.NORTH, buttonPoint);
+		springLayout.putConstraint(SpringLayout.WEST, buttonDelete, 6, SpringLayout.EAST, buttonSelect);
 		springLayout.putConstraint(SpringLayout.SOUTH, buttonDelete, -6, SpringLayout.NORTH, pnlDrawing);
 		mainFrm.getContentPane().add(buttonDelete);
 		buttonDelete.addActionListener(new ActionListener() {
@@ -261,19 +273,6 @@ public class MainFrame {
 					deleteDialog.setVisible(true);
 				}
 				
-			}
-		});
-		
-		JButton btnClear = new JButton("Clear");
-		springLayout.putConstraint(SpringLayout.EAST, buttonDelete, -6, SpringLayout.WEST, btnClear);
-		springLayout.putConstraint(SpringLayout.NORTH, btnClear, 0, SpringLayout.NORTH, buttonPoint);
-		springLayout.putConstraint(SpringLayout.SOUTH, btnClear, -6, SpringLayout.NORTH, pnlDrawing);
-		springLayout.putConstraint(SpringLayout.EAST, btnClear, -29, SpringLayout.EAST, mainFrm.getContentPane());
-		mainFrm.getContentPane().add(btnClear);
-		btnClear.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				pnlDrawing.clearPanel();
 			}
 		});
 		

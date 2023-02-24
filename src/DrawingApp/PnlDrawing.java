@@ -66,8 +66,6 @@ public class PnlDrawing extends JPanel{
 	private MouseEvent lastEvent;
 	private EditDialog editDialog;
 	private Status status;
-	private static int WIDTH = 800;
-	private static int HEIGHT = 800;
 	private ArrayList<Shape> newShapes;
 	private ArrayList<Shape> redoList = new ArrayList<>();
 	private Shape shapeToRedo;
@@ -314,7 +312,6 @@ public class PnlDrawing extends JPanel{
 
 	public void clearPanel() {
 		shapes.clear();
-		this.repaint();
 	}
 	
 	public void repaintPanel() {
@@ -387,10 +384,29 @@ public class PnlDrawing extends JPanel{
 	}
 	
 	
+	public  void saveImage() {
+		BufferedImage img = new BufferedImage(this.getWidth(), this.getHeight(), BufferedImage.TYPE_INT_BGR);
+		Graphics g2 =  img.getGraphics();
+		g2.setColor(Color.WHITE);
+		g2.fillRect(0, 0, img.getWidth(), img.getHeight());
+		this.paintAll(g2);
+		
+		JFileChooser fileChooser = new JFileChooser();
+	    if (fileChooser.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
+	        File file = fileChooser.getSelectedFile();
+	        try {
+	            ImageIO.write(img, "png", file);
+	        } catch (IOException ex) {
+	            System.out.println("Failed to save image!");
+	        }
+	    } else {
+	        System.out.println("No file choosen!");
+	    }
+	}
+	}
 	
 	
-	
-}
+
 
 
 

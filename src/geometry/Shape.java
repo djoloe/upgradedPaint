@@ -9,9 +9,11 @@ import DrawingApp.PnlDrawing;
 
 public abstract class Shape implements Moveable, Comparable,Serializable{
 	
+	
 	protected boolean selected;
 	protected Color color;
 	protected Color fillColor;
+	
 	public Shape() {
 	
 	}
@@ -43,6 +45,10 @@ public abstract class Shape implements Moveable, Comparable,Serializable{
 	public void setSelected(boolean selected) {
 		this.selected = selected;
 	}
+
+	
+		
+	
 	
 
 	
