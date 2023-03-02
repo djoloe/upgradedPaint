@@ -66,8 +66,8 @@ public class MainFrame {
 	private JPanel bottomArea;
 	private ShapeDetailsPanel detailsPanel;
 	private JButton buttonSelect;
-	private Image image;
 	private JMenuItem printMenuItem;
+	
 	
 	public static MainFrame Instance() {
 		if (mainFrame == null) {

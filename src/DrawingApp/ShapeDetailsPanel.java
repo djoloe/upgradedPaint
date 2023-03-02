@@ -15,7 +15,6 @@ import javax.swing.SpringLayout;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-import org.w3c.dom.css.Rect;
 
 import geometry.Circle;
 import geometry.Donut;

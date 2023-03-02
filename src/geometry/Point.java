@@ -3,9 +3,17 @@ package geometry;
 import java.awt.Color;
 import java.awt.Graphics;
 
+
+
+
+
 public class Point extends Shape{
+	
+
+	private int idpoint;
 
 	private int x;
+	
 	private int y;
 	
 	public Point() {
