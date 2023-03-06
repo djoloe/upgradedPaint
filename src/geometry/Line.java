@@ -2,9 +2,24 @@ package geometry;
 
 import java.awt.Graphics;
 
-public class Line extends Shape {
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
+
+
+@Entity
+@Table
+public class Line extends Shape {
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private int idline;
+	@Column 
 	private Point startPoint;
+	@Column
 	private Point endPoint;
 	
 	public Line() {

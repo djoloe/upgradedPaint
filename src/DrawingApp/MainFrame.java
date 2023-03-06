@@ -38,6 +38,7 @@ import javax.swing.SpringLayout;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import DrawingApp.PnlDrawing;
+import SQLConnection.Mapping;
 import geometry.Circle;
 import geometry.Donut;
 import geometry.Line;
@@ -67,6 +68,7 @@ public class MainFrame {
 	private ShapeDetailsPanel detailsPanel;
 	private JButton buttonSelect;
 	private JMenuItem printMenuItem;
+	private JMenuItem saveToMySQLMenuItem;
 	
 	
 	public static MainFrame Instance() {
@@ -205,6 +207,15 @@ public class MainFrame {
 			}
 		});
 		menuFile.add(printMenuItem);
+		
+		saveToMySQLMenuItem = new JMenuItem("Save to mySQL");
+		menuFile.add(saveToMySQLMenuItem);
+		saveToMySQLMenuItem.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				Mapping mapping = new Mapping(pnlDrawing.getShapeList());
+			}
+		});
 		
 		bottomArea = new JPanel();
 		springLayout.putConstraint(SpringLayout.NORTH, bottomArea, 1, SpringLayout.SOUTH, pnlDrawing);

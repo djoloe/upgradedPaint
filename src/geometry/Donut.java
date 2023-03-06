@@ -2,9 +2,22 @@ package geometry;
 
 import java.awt.Graphics;
 
-public class Donut extends Circle {
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
+@Entity
+@Table
+public class Donut extends Circle {
+	
+	
+	private int iddonut;
+	
 	private int innerRadius;
+	
 	
 	public Donut() {
 	

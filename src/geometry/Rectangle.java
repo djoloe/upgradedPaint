@@ -2,11 +2,27 @@ package geometry;
 
 import java.awt.Graphics;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+@Entity
+@Table
 public class Rectangle extends Shape {
 
-	private int width;
-	private int height;
+	@Id
+	@GeneratedValue(strategy  = GenerationType.AUTO)
+	private int idrect;
+	@Column
 	private Point upperLeft;
+	@Column
+	private int width;
+	@Column
+	private int height;
+	
 	
 	public Rectangle() {
 		
