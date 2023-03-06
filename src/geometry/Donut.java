@@ -2,20 +2,28 @@ package geometry;
 
 import java.awt.Graphics;
 
+
 import javax.persistence.Column;
+import javax.persistence.DiscriminatorColumn;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.MappedSuperclass;
 import javax.persistence.Table;
+
+
 
 @Entity
 @Table
 public class Donut extends Circle {
 	
-	
-	private int iddonut;
-	
+//	@Id
+//	@GeneratedValue(strategy = GenerationType.AUTO)
+//	private int iddonut;
+	@Column
 	private int innerRadius;
 	
 	

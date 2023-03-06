@@ -19,12 +19,12 @@ import org.hibernate.service.ServiceRegistry;
 
 import DrawingApp.PnlDrawing;
 
-public class Mapping {
+public class SaveToBase {
 		
 		private ArrayList<Shape> shapes = new ArrayList<>();
 		private Session session;
 		
-		public Mapping(ArrayList<Shape> shapes) {
+		public SaveToBase(ArrayList<Shape> shapes) {
 			
 		
 		
@@ -55,7 +55,6 @@ public class Mapping {
 		}
 		
 		tx.commit();
-		
 		}
 		
 		

@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
+import java.sql.SQLException;
 
 import javax.imageio.ImageIO;
 import javax.lang.model.util.Elements.Origin;
@@ -38,7 +39,8 @@ import javax.swing.SpringLayout;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import DrawingApp.PnlDrawing;
-import SQLConnection.Mapping;
+import SQLConnection.ReadFromBase;
+import SQLConnection.SaveToBase;
 import geometry.Circle;
 import geometry.Donut;
 import geometry.Line;
@@ -211,11 +213,36 @@ public class MainFrame {
 		saveToMySQLMenuItem = new JMenuItem("Save to mySQL");
 		menuFile.add(saveToMySQLMenuItem);
 		saveToMySQLMenuItem.addActionListener(new ActionListener() {
+			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				Mapping mapping = new Mapping(pnlDrawing.getShapeList());
+				SaveToBase mapping = new SaveToBase(pnlDrawing.getShapeList());
+
+				
 			}
 		});
+		
+		JMenuItem readFromMySQLMenuItem = new JMenuItem("Read from mySQL");
+		menuFile.add(readFromMySQLMenuItem);
+		readFromMySQLMenuItem.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					try {
+						ReadFromBase read = new  ReadFromBase( pnlDrawing);
+					} catch (ClassNotFoundException | IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+				} catch (SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				
+			}
+		});
+		
 		
 		bottomArea = new JPanel();
 		springLayout.putConstraint(SpringLayout.NORTH, bottomArea, 1, SpringLayout.SOUTH, pnlDrawing);

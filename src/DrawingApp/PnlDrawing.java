@@ -383,6 +383,10 @@ public class PnlDrawing extends JPanel{
 		return shapes;
 	}
 	
+	public void setShapeList(ArrayList<Shape> shapes){
+		this.shapes = shapes;
+	
+	}
 	
 	public  void saveImage() {
 		BufferedImage img = new BufferedImage(this.getWidth(), this.getHeight(), BufferedImage.TYPE_INT_BGR);
