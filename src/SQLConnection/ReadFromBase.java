@@ -34,8 +34,8 @@ public class ReadFromBase {
 	    readPoints();
 	    readLine();
 	    readRectangle();
-	    readDonut();
-	    readCircle();
+	    readCircleAndDonut();
+	    
 	    
 	    pnlDrawing.setShapeList(shapeList);
 	    
@@ -84,21 +84,8 @@ public class ReadFromBase {
 	    }
 	}
 	
-	private void readCircle() throws SQLException, ClassNotFoundException, IOException {
-		String sql = "Select * From paint.circle";
-	    ResultSet rst;
-	    rst = stm.executeQuery(sql);
-	   
-	    while (rst.next()) {
-	    	byte[] center = rst.getBytes("center");
-	    	Point centerPoint = castSinglePoint(center);
-	        Circle circle = new Circle(centerPoint, rst.getInt("radius"));
-	        Shape shape = (Shape) circle;
-	        shapeList.add(shape);
-	    }
-	}
 	
-	private void readDonut() throws SQLException, ClassNotFoundException, IOException {
+	private void readCircleAndDonut() throws SQLException, ClassNotFoundException, IOException {
 		String sql = "Select * From paint.circle";
 	    ResultSet rst;
 	    rst = stm.executeQuery(sql);
@@ -106,9 +93,16 @@ public class ReadFromBase {
 	    while (rst.next()) {
 	    	byte[] center = rst.getBytes("center");
 	    	Point centerDonut = castSinglePoint(center);
+	    	if(rst.getInt("innerRadius") != 0) {
 	        Donut donut = new Donut(centerDonut, rst.getInt("radius"), rst.getInt("innerRadius"));
 	        Shape shape = (Shape) donut;
 	        shapeList.add(shape);
+	        } else {
+	        	Circle circle = new Circle(centerDonut, rst.getInt("radius"));
+	        	Shape shape = (Shape) circle;
+	        	shapeList.add(shape);
+	        }
+	       
 	    }
 	}
 	
