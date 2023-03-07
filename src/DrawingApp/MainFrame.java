@@ -186,6 +186,7 @@ public class MainFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				pnlDrawing.openWithFileChooser();
+				if(pnlDrawing.getShapeList().size() ==0) return;
 				pnlDrawing.repaintPanel();
 			}
 		});

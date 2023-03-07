@@ -12,12 +12,11 @@ import java.util.ArrayList;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
-import org.hibernate.boot.registry.StandardServiceRegistry;
-import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
-import org.hibernate.cfg.Configuration;
-import org.hibernate.service.ServiceRegistry;
 
-import DrawingApp.PnlDrawing;
+import org.hibernate.cfg.Configuration;
+
+
+
 
 public class SaveToBase {
 		

@@ -264,26 +264,30 @@ public class PnlDrawing extends JPanel{
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-		}
+		} else if (result == JFileChooser.CANCEL_OPTION) {
+            System.out.println("Cancel was selected");
+            
+        }
 	}
 	
 	public void openWithFileChooser() {
 		JFileChooser chooser = new JFileChooser();
 		int result = chooser.showOpenDialog(null);
-        if(result == JFileChooser.APPROVE_OPTION)
-        {
+        if(result == JFileChooser.APPROVE_OPTION){
             try
             {
-             File file = chooser.getSelectedFile();
+            File file = chooser.getSelectedFile();
         	FileInputStream fis = new FileInputStream(file);
    			ObjectInputStream ois = new ObjectInputStream(fis);
    			newShapes = (ArrayList<Shape>) ois.readObject();
-            
             }
             catch(Exception io)
             {
                 io.printStackTrace();
             }   
+        } else if (result == JFileChooser.CANCEL_OPTION) {
+            System.out.println("Cancel was selected");
+            
         }
 	
 	}
