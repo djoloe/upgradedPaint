@@ -12,8 +12,6 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Base64;
-
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import javax.swing.JButton;
@@ -41,6 +39,7 @@ public class MainDialog extends JDialog {
 	private JTextField fieldUsername;
 	private User newUser;
 	private Session session;
+	private JLabel labelEmptyPassword;
 	private Transaction tx;
 	private JPasswordField passwordField;
 	private String password;
@@ -86,13 +85,6 @@ public class MainDialog extends JDialog {
 		sl_contentPanel.putConstraint(SpringLayout.WEST, labelPassword, 0, SpringLayout.WEST, labelUsername);
 		contentPanel.add(labelPassword);
 		
-		
-		JLabel labelWarningUsername = new JLabel("User already in database!");
-		sl_contentPanel.putConstraint(SpringLayout.NORTH, labelWarningUsername, 0, SpringLayout.NORTH, fieldUsername);
-		sl_contentPanel.putConstraint(SpringLayout.WEST, labelWarningUsername, 6, SpringLayout.EAST, fieldUsername);
-		contentPanel.add(labelWarningUsername);
-		labelWarningUsername.setVisible(false);
-		
 		passwordField = new JPasswordField();
 		sl_contentPanel.putConstraint(SpringLayout.NORTH, passwordField, 9, SpringLayout.SOUTH, labelPassword);
 		sl_contentPanel.putConstraint(SpringLayout.WEST, passwordField, 0, SpringLayout.WEST, fieldUsername);
@@ -104,6 +96,15 @@ public class MainDialog extends JDialog {
 		sl_contentPanel.putConstraint(SpringLayout.WEST, labelWarningPassword, 5, SpringLayout.EAST, passwordField);
 		contentPanel.add(labelWarningPassword);
 		labelWarningPassword.setVisible(false);
+		
+		labelEmptyPassword = new JLabel("Password cannot be empty!");
+		sl_contentPanel.putConstraint(SpringLayout.NORTH, labelEmptyPassword, 7, SpringLayout.SOUTH, passwordField);
+		sl_contentPanel.putConstraint(SpringLayout.WEST, labelEmptyPassword, 107, SpringLayout.WEST, contentPanel);
+		sl_contentPanel.putConstraint(SpringLayout.SOUTH, labelEmptyPassword, -63, SpringLayout.SOUTH, contentPanel);
+		sl_contentPanel.putConstraint(SpringLayout.EAST, labelEmptyPassword, 10, SpringLayout.EAST, fieldUsername);
+		contentPanel.add(labelEmptyPassword);
+		labelEmptyPassword.setVisible(false);
+		
 		{
 			JPanel buttonPane = new JPanel();
 			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
@@ -119,20 +120,25 @@ public class MainDialog extends JDialog {
 					labelWarningPassword.setVisible(false);
 					try {
 							String loginTestUser = readUserForLogin();
-							if(loginTestUser == null  || !loginTestUser.equals(fieldUsername.getText())) {
+							if((loginTestUser == null  || !loginTestUser.equals(fieldUsername.getText())) && !(passwordField.getPassword().length == 0)) 
+							{  
 								saveUser();
 								dispose();
-							} else if (checkPassword(loginTestUser) == true){
-								labelWarningUsername.setVisible(true);
-								System.out.println("Password ok!");
+							} else if (passwordField.getPassword().length == 0){
+								labelEmptyPassword.setVisible(true);
+							} else if(checkPassword(loginTestUser) == true){
 								dispose();
 							} else {
+								labelEmptyPassword.setVisible(false);
 								labelWarningPassword.setVisible(true);
-							}
+							}						
+							
 						} catch (SQLException e1) {
 							e1.printStackTrace();
 						}
 					}
+
+					
 				});
 				getRootPane().setDefaultButton(okButton);
 			}
@@ -160,6 +166,8 @@ public class MainDialog extends JDialog {
 		
 	}
 	
+	
+	
 	private void saveUser() {
 		String username = fieldUsername.getText();
 		int hashPassword = passwordField.getText().hashCode();
@@ -167,6 +175,7 @@ public class MainDialog extends JDialog {
 		newUser = new User(username, finalPassword);
 		session.save(newUser);
 		tx.commit();
+		dispose();
 	}
 	
 	private String readUserForLogin() throws SQLException {
@@ -200,8 +209,4 @@ public class MainDialog extends JDialog {
 	    	}
 		return flag;
 	}
-	
-	
-	
-	
 }
