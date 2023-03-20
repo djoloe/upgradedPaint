@@ -6,6 +6,8 @@ import org.hibernate.cfg.Configuration;
 
 import DrawingApp.PnlDrawing;
 import DrawingApp.Status;
+import Login.User;
+import Login.Workspace;
 import geometry.Circle;
 import geometry.Donut;
 import geometry.Line;
@@ -24,6 +26,8 @@ public class Config {
 		cfg.addAnnotatedClass(Rectangle.class);
 		cfg.addAnnotatedClass(Circle.class);
 		cfg.addAnnotatedClass(Donut.class);
+		cfg.addAnnotatedClass(Workspace.class);
+		cfg.addAnnotatedClass(User.class);
 		
 		
 	}

@@ -2,12 +2,21 @@ package geometry;
 
 import java.awt.Graphics;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
+import Login.Workspace;
 
 
 
@@ -21,6 +30,10 @@ public class Line extends Shape {
 	private Point startPoint;
 	@Column
 	private Point endPoint;
+	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, optional = true)
+	@JoinColumn(name = "id_workspace")
+	@OnDelete(action = OnDeleteAction.CASCADE)
+	private Workspace workspace;
 	
 	public Line() {
 	}
@@ -28,6 +41,11 @@ public class Line extends Shape {
 	public Line(Point startPoint, Point endPoint) {
 		this.startPoint = startPoint;
 		this.endPoint = endPoint;
+	}
+	
+	public Line(Point startPoint, Point endPoint, Workspace workspace) {
+		this(startPoint,endPoint);
+		this.workspace = workspace;
 	}
 	
 	public Line(Point startPoint, Point endPoint, boolean selected) {

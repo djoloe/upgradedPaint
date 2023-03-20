@@ -2,17 +2,25 @@ package geometry;
 
 import java.awt.Graphics;
 
-
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
+import Login.Workspace;
 
 
 
@@ -20,12 +28,14 @@ import javax.persistence.Table;
 @Table
 public class Donut extends Circle {
 	
-//	@Id
-//	@GeneratedValue(strategy = GenerationType.AUTO)
-//	private int iddonut;
+
 	@Column
 	private int innerRadius;
 	
+	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, optional = true)
+	@JoinColumn(name = "id_workspace")
+	@OnDelete(action = OnDeleteAction.CASCADE)
+	private Workspace workspace;
 	
 	public Donut() {
 	
@@ -34,6 +44,13 @@ public class Donut extends Circle {
 	public Donut(Point center, int radius, int innerRadius) {
 		super(center,radius);
 		this.innerRadius = innerRadius;
+
+	}
+	
+	public Donut(Point center, int radius, int innerRadius, Workspace workspace) {
+		super(center,radius);
+		this.innerRadius = innerRadius;
+		this.workspace = workspace;
 
 	}
 	

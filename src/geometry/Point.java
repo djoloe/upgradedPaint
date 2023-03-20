@@ -5,12 +5,12 @@ import java.awt.Graphics;
 import java.io.Serializable;
 
 import javax.persistence.*;
-import javax.persistence.Entity;
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
+import Login.User;
+import Login.Workspace;
 
 
 
@@ -19,7 +19,7 @@ import javax.persistence.Table;
 public class Point extends Shape {
 	
 	
-
+	
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private int idpoint;
@@ -27,6 +27,11 @@ public class Point extends Shape {
 	private int x;
 	@Column(name="y")
 	private int y;
+	
+	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, optional = true)
+	@JoinColumn(name = "id_workspace")
+	@OnDelete(action = OnDeleteAction.CASCADE)
+	private Workspace workspace;
 	
 	public Point() {
 		
@@ -42,6 +47,10 @@ public class Point extends Shape {
 		this.selected = selected;
 	}
 	
+	public Point(int x, int y, Workspace workspace) {
+		this(x,y);
+		this.workspace = workspace;
+	}
 	
 	
 	public double distance(int x, int y) {

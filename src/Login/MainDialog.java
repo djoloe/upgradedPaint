@@ -12,6 +12,8 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import javax.swing.JButton;
@@ -25,6 +27,8 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
 
+import DrawingApp.MainApp;
+import DrawingApp.MainFrame;
 import geometry.Point;
 import geometry.Shape;
 
@@ -38,27 +42,36 @@ public class MainDialog extends JDialog {
 	private final JPanel contentPanel = new JPanel();
 	private JTextField fieldUsername;
 	private User newUser;
+	private User loggedUser;
+	
 	private Session session;
 	private JLabel labelEmptyPassword;
 	private Transaction tx;
 	private JPasswordField passwordField;
 	private String password;
 	private static final int SALT = 1562425;
+	private static MainDialog dialog;
 	/**
 	 * Launch the application.
 	 */
 	public static void main(String[] args) {
 		try {
-			MainDialog dialog = new MainDialog();
-			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-			dialog.setVisible(true);
+			MainDialog.Instance().setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+			MainDialog.Instance().setVisible(true);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-
 	
-	public MainDialog() {
+	public static MainDialog Instance() {
+		if(dialog == null) {
+			dialog = new MainDialog();
+		}
+		return dialog;
+		
+	}
+	
+	private MainDialog() {
 		setTitle("Login");
 		setBounds(500, 250, 436, 306);
 		getContentPane().setLayout(new BorderLayout());
@@ -123,10 +136,14 @@ public class MainDialog extends JDialog {
 							if((loginTestUser == null  || !loginTestUser.equals(fieldUsername.getText())) && !(passwordField.getPassword().length == 0)) 
 							{  
 								saveUser();
+								chooseWorkspace();
 								dispose();
 							} else if (passwordField.getPassword().length == 0){
 								labelEmptyPassword.setVisible(true);
 							} else if(checkPassword(loginTestUser) == true){
+								chooseWorkspace();
+								fillJList();
+								LoadWorkspace.Instance().enableButton();
 								dispose();
 							} else {
 								labelEmptyPassword.setVisible(false);
@@ -159,7 +176,9 @@ public class MainDialog extends JDialog {
 	}
 	
 	private void setUpConfig() {
-		Configuration cfg = new Configuration().configure().addAnnotatedClass(User.class);
+		Configuration cfg = new Configuration().configure();
+		cfg.addAnnotatedClass(User.class);
+		cfg.addAnnotatedClass(Workspace.class);
 		SessionFactory sf = cfg.buildSessionFactory();
 		session = sf.openSession();
 		tx = session.beginTransaction();
@@ -173,9 +192,20 @@ public class MainDialog extends JDialog {
 		int hashPassword = passwordField.getText().hashCode();
 		int finalPassword = hashPassword + SALT;
 		newUser = new User(username, finalPassword);
+		setUser(newUser);
 		session.save(newUser);
 		tx.commit();
 		dispose();
+	}
+	
+
+	private void setUser(User newUser) {
+		loggedUser = newUser;
+		
+	}
+	
+	public User getUser() {
+		return loggedUser;
 	}
 	
 	private String readUserForLogin() throws SQLException {
@@ -204,9 +234,49 @@ public class MainDialog extends JDialog {
 	    	if(rst.getString("username").equals(loginTestUser)) {
 	    		if((passwordField.getText().hashCode() + SALT) == rst.getInt("password")) {
 	    				flag = true;
+	    				loggedUser = new User();
+	    				loggedUser.setIduser(rst.getInt("iduser"));
+	    				loggedUser.setUsername(rst.getString("username"));
+	    				loggedUser.setPassword(rst.getInt("password"));
+	    				
 	    			}
 	    		}
 	    	}
 		return flag;
 	}
+	
+	
+	private void chooseWorkspace() {
+		LoadWorkspace.Instance();
+		
+	}
+	
+	public void fillJList() throws SQLException {
+		Connection conn= DriverManager.getConnection("jdbc:mysql://localhost:3306/paint", "root", "adde22432");
+		Statement stm = conn.createStatement();
+		String sql = "Select * From paint.workspace where user_id = " + loggedUser.getIduser() + ";";
+	    ResultSet rst;
+	    rst = stm.executeQuery(sql);
+	    while (rst.next()) {
+	    		Workspace loggedUserWorkspace = new Workspace(rst.getString("workspaceName"));
+	    		LoadWorkspace.Instance().addtoJList(loggedUserWorkspace);
+	    		}
+	}
+	
+	
+	public Integer getWorkspaceID() throws SQLException {
+		Connection conn= DriverManager.getConnection("jdbc:mysql://localhost:3306/paint", "root", "adde22432");
+		Statement stm = conn.createStatement();
+		String sql = "Select * From paint.workspace";	
+	    ResultSet rst;
+	    int id = 0;
+	    rst = stm.executeQuery(sql);
+	    while (rst.next()) {
+	    			if(rst.getString("workspaceName").equals(LoadWorkspace.Instance().getWorkspaceStringFromJlist())) {
+	    				id = rst.getInt("idWorkspace");
+	    			}
+	    		}
+	    return id;
+	}
+	
 }

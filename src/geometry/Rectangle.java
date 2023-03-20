@@ -2,12 +2,21 @@ package geometry;
 
 import java.awt.Graphics;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
+import Login.Workspace;
 
 @Entity
 @Table
@@ -23,6 +32,10 @@ public class Rectangle extends Shape {
 	@Column
 	private int height;
 	
+	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, optional = true)
+	@JoinColumn(name = "id_workspace")
+	@OnDelete(action = OnDeleteAction.CASCADE)
+	private Workspace workspace;
 	
 	public Rectangle() {
 		
@@ -32,6 +45,11 @@ public class Rectangle extends Shape {
 		this.upperLeft = upperLeft;
 		this.width = width;
 		this.height = height;
+	}
+	
+	public Rectangle(Point upperLeft, int width, int height, Workspace workspace) {
+		this(upperLeft,width,height);
+		this.workspace = workspace;
 	}
 	
 	public Rectangle(Point upperLeft, int width, int height, boolean selected) {

@@ -22,29 +22,25 @@ import geometry.Shape;
 public class ReadFromBase {
 	
 	private Statement stm;
-	private PnlDrawing pnlDrawing;
 	private ArrayList<Shape> shapeList = new ArrayList<>();
+	private int id;
 	
-	
-	public ReadFromBase(PnlDrawing pnlDrawing) throws SQLException, ClassNotFoundException, IOException {
-		this.pnlDrawing = pnlDrawing;
+	public ReadFromBase(int id) throws SQLException, ClassNotFoundException, IOException {
 		
+		this.id = id;
 		Connection conn= DriverManager.getConnection("jdbc:mysql://localhost:3306/paint", "root", "adde22432");
-	    stm = conn.createStatement();
-	    readPoints();
+	    stm = conn.createStatement(); 
+		readPoints();
 	    readLine();
 	    readRectangle();
 	    readCircleAndDonut();
-	    
-	    
-	    pnlDrawing.setShapeList(shapeList);
-	    
 	}
 	
-	
 
+	
+	
 	private void readPoints() throws SQLException {
-		String sql = "Select * From paint.point";
+		String sql = "Select * From paint.point where id_workspace = "  + id;
 	    ResultSet rst;
 	    rst = stm.executeQuery(sql);
 	   
@@ -56,7 +52,7 @@ public class ReadFromBase {
 	}
 	
 	private void readLine() throws SQLException, ClassNotFoundException, IOException {
-		String sql = "Select * From paint.line";
+		String sql = "Select * From paint.line where id_workspace = " + id;
 	    ResultSet rst;
 	    rst = stm.executeQuery(sql);
 	   
@@ -71,7 +67,7 @@ public class ReadFromBase {
 	}
 	
 	private void readRectangle() throws SQLException, ClassNotFoundException, IOException {
-		String sql = "Select * From paint.rectangle";
+		String sql = "Select * From paint.rectangle where id_workspace = " + id;
 	    ResultSet rst;
 	    rst = stm.executeQuery(sql);
 	   
@@ -86,7 +82,7 @@ public class ReadFromBase {
 	
 	
 	private void readCircleAndDonut() throws SQLException, ClassNotFoundException, IOException {
-		String sql = "Select * From paint.circle";
+		String sql = "Select * From paint.circle where id_workspace = " + id;
 	    ResultSet rst;
 	    rst = stm.executeQuery(sql);
 	   
@@ -123,6 +119,10 @@ public class ReadFromBase {
 	      ObjectInputStream ois1 = new ObjectInputStream(baip1);
 	      Point changeablePoint = (Point) ois1.readObject();
 	      return changeablePoint;
+	}
+	
+	public ArrayList<Shape> getShapes(){
+		return shapeList;
 	}
 	
 	

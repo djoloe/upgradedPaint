@@ -3,8 +3,10 @@ package DrawingApp;
 import java.awt.AWTException;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Frame;
 import java.awt.Graphics2D;
 import java.awt.GridLayout;
 import java.awt.Image;
@@ -17,12 +19,15 @@ import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 import javax.lang.model.util.Elements.Origin;
@@ -38,7 +43,13 @@ import javax.swing.JPanel;
 import javax.swing.SpringLayout;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import org.hibernate.loader.plan.spi.LoadPlan.Disposition;
+
 import DrawingApp.PnlDrawing;
+import Login.LoadWorkspace;
+import Login.MainDialog;
+import Login.User;
+import Login.Workspace;
 import SQLConnection.ReadFromBase;
 import SQLConnection.SaveToBase;
 import geometry.Circle;
@@ -50,6 +61,7 @@ import geometry.Shape;
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import java.awt.SystemColor;
@@ -63,15 +75,12 @@ public class MainFrame {
 	private JMenuBar menuBar;
 	private JMenu menuFile;
 	private JMenuItem newMenuItem;
-	private JMenuItem openMenuItem;
-	private JMenuItem saveMenuItem;
-	private JMenu saveAsMenuItem;
 	private JPanel bottomArea;
 	private ShapeDetailsPanel detailsPanel;
 	private JButton buttonSelect;
 	private JMenuItem printMenuItem;
 	private JMenuItem saveToMySQLMenuItem;
-	
+	private User user;
 	
 	public static MainFrame Instance() {
 		if (mainFrame == null) {
@@ -85,7 +94,13 @@ public class MainFrame {
 		
 		mainFrm = new JFrame();
 		mainFrm.setBounds(100, 100, 950, 549);
-		mainFrm.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		mainFrm.addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent e) {
+				LoadWorkspace.Instance().showWindow();
+				super.windowClosing(e);
+			}
+		});
 		SpringLayout springLayout = new SpringLayout();
 		mainFrm.getContentPane().setLayout(springLayout);
 		
@@ -175,33 +190,10 @@ public class MainFrame {
 		newMenuItem.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				pnlDrawing.clearPanel();
+				System.out.println(pnlDrawing.getShapeList());
 			}
 		});
 		menuFile.add(newMenuItem);
-		
-		openMenuItem = new JMenuItem("Open");
-		menuFile.add(openMenuItem);
-		openMenuItem.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				pnlDrawing.openWithFileChooser();
-				if(pnlDrawing.getShapeList().size() ==0) return;
-				pnlDrawing.repaintPanel();
-			}
-		});
-		
-		saveMenuItem = new JMenuItem("Save");
-		menuFile.add(saveMenuItem);
-		saveMenuItem.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				pnlDrawing.saveWithFileChooser();
-			}
-		});
-		
-		saveAsMenuItem = new JMenu("Save as >");
-		menuFile.add(saveAsMenuItem);
 		
 		printMenuItem = new JMenuItem("Save as png");
 		printMenuItem.addActionListener(new ActionListener() {
@@ -217,30 +209,12 @@ public class MainFrame {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				SaveToBase mapping = new SaveToBase(pnlDrawing.getShapeList());
-
-				
-			}
-		});
-		
-		JMenuItem readFromMySQLMenuItem = new JMenuItem("Read from mySQL");
-		menuFile.add(readFromMySQLMenuItem);
-		readFromMySQLMenuItem.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				try {
-					try {
-						ReadFromBase read = new  ReadFromBase( pnlDrawing);
-					} catch (ClassNotFoundException | IOException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
-				} catch (SQLException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-				
+				LoadWorkspace.Instance().makeWorkspace();
+				ArrayList<Shape> shapes = pnlDrawing.getShapeList();
+				SaveToBase mapping = new SaveToBase(shapes, LoadWorkspace.Instance().getWorkspace());
+				mainFrm.dispose();
+				LoadWorkspace.Instance().showWindow();
+				pnlDrawing.clearPanel();
 			}
 		});
 		
@@ -315,18 +289,21 @@ public class MainFrame {
 			}
 		});
 		
-		mainFrm.setVisible(true);
-		
 		
 	}
+	
+	
 	
 	public Color popUpColorChooser() {
 			
 			Color initialColor = Color.black;
 			Color color = JColorChooser.showDialog(pnlDrawing, "select color", initialColor);
 			return color;
-		}
-
+	}
+	
+	public void setVisibleFrame() {
+		mainFrm.setVisible(true);
+	}
 	public void refreshScreen() {
 		mainFrm.repaint(); 
 	}
@@ -338,4 +315,15 @@ public class MainFrame {
 	public JPanel getBottomAreaPanel() {
 		return bottomArea;
 	}
+	
+	public void setUser(User user) {
+		this.user = user;
+	}
+	
+	public void paintShapesFromBase(ArrayList<Shape> shapes) {
+		pnlDrawing.setShapeList(shapes);
+	}
+	
+	
+	
 }
