@@ -16,6 +16,7 @@ import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
 
 import DrawingApp.MainFrame;
+import DrawingApp.PnlDrawing;
 import Login.LoadWorkspace;
 import Login.MainDialog;
 import Login.User;
@@ -32,7 +33,7 @@ public class SaveToBase {
 		
 		
 		public SaveToBase(ArrayList<Shape> shapes, Workspace workspace) {
-			
+		
 		this.workspace = workspace;
 		Config cfg = new Config();
 		Configuration configuration = cfg.getCfg();
@@ -41,6 +42,7 @@ public class SaveToBase {
 		Transaction tx = session.beginTransaction();
 		
 		
+			
 		for (Shape shape : shapes) {
 			if(shape instanceof Point) {
 				Point castedPoint = (Point) shape;
@@ -61,6 +63,7 @@ public class SaveToBase {
 		}
 		
 		
+		
 		tx.commit();
 		}
 		
@@ -70,7 +73,7 @@ public class SaveToBase {
 			Circle circle = new Circle(center, radius, workspace);
 			session.save(circle);
 		}
-
+		
 		private void saveRectangle(Rectangle r) {
 			Point upperleft = r.getUpperLeft();
 			int width = r.getWidth();
@@ -78,7 +81,7 @@ public class SaveToBase {
 			Rectangle rectangle = new Rectangle(upperleft, width, height, workspace);
 			session.save(rectangle);				
 		}
-
+		
 		private void saveDonut(Donut d) {
 			Point center = d.getCenter();
 			int radius = d.getRadius();
@@ -86,7 +89,7 @@ public class SaveToBase {
 			Donut donut = new Donut(center, radius, innerRadius, workspace);
 			session.save(donut);
 		}
-
+		
 		private void saveLine(Line l) {
 			Point startPoint = l.getStartPoint();
 			Point endPoint = l.getEndPoint();

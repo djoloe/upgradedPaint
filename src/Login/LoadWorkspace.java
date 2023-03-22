@@ -19,6 +19,8 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -28,6 +30,7 @@ import org.hibernate.cfg.Configuration;
 
 
 import DrawingApp.MainFrame;
+import DrawingApp.PnlDrawing;
 import SQLConnection.ReadFromBase;
 import geometry.Line;
 import geometry.Point;
@@ -52,6 +55,7 @@ public class LoadWorkspace extends JDialog {
 	private String workSpaceName;
 	private Workspace workspace;
 	private ArrayList<Shape> shapes = new ArrayList<>();
+	private String workspaceStringLoad;
 	/**
 	 * Launch the application.
 	 */
@@ -94,6 +98,7 @@ public class LoadWorkspace extends JDialog {
 		sl_contentPanel.putConstraint(SpringLayout.EAST, workspacesList, 232, SpringLayout.WEST, contentPanel);
 		contentPanel.add(workspacesList);
 		workspacesList.setVisible(true);
+		
 		
 		
 		{
@@ -142,7 +147,6 @@ public class LoadWorkspace extends JDialog {
 				public void actionPerformed(ActionEvent e) {
 					int id = 0;
 					try {
-						
 						id = MainDialog.Instance().getWorkspaceID();
 					} catch (SQLException e1) {
 						// TODO Auto-generated catch block
@@ -150,9 +154,8 @@ public class LoadWorkspace extends JDialog {
 					}
 					try {
 						ReadFromBase read = new ReadFromBase(id);
-						shapes = read.getShapes();
+						shapes = read.getShapesFromDB();
 						MainFrame.Instance().paintShapesFromBase(shapes);
-						MainFrame.Instance().setVisibleFrame();
 					} catch (ClassNotFoundException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
@@ -230,18 +233,26 @@ public class LoadWorkspace extends JDialog {
 		workSpaceName = JOptionPane.showInputDialog(f, "Enter workspace name: ");
 		workspace = new Workspace(workSpaceName, loggedUser);
 		loggedUser.setWorkspace(workspace);
-		addtoJList(workspace);
+		
 	}
 	
 	public Workspace getWorkspace() {
 		return workspace;
 	}
 	
-	public String getWorkspaceStringFromJlist() {
+	private void handleWorkSpaceString() {
 		Workspace workspaceForLoad = (Workspace) workspacesList.getSelectedValue();
-		String workspaceStringLoad = workspaceForLoad.toString();
+		 workspaceStringLoad = workspaceForLoad.toString();
+		if(workspaceStringLoad == null) {
+			System.out.println("Choose item!");
+			return;
+		}
+	}
+	
+	public String getWorkspaceStringFromJlist() {
 		return workspaceStringLoad;
 	}
+	
 	
 	private void removeWorkspace() throws SQLException {
 		Connection conn= DriverManager.getConnection("jdbc:mysql://localhost:3306/paint", "root", "adde22432");
@@ -264,7 +275,16 @@ public class LoadWorkspace extends JDialog {
 		return workSpaceName;
 	}
 
-	
+	public ArrayList<Shape> getShapesFromReadBase(){
+		return shapes;
 	}
+	
+	
+	public DefaultListModel<Workspace> getWorkspaces(){
+		return workspaces;
+		
+	}
+	
+}
 	
 

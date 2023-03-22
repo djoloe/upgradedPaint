@@ -190,7 +190,7 @@ public class MainFrame {
 		newMenuItem.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				System.out.println(pnlDrawing.getShapeList());
+				
 			}
 		});
 		menuFile.add(newMenuItem);
@@ -206,15 +206,21 @@ public class MainFrame {
 		saveToMySQLMenuItem = new JMenuItem("Save to mySQL");
 		menuFile.add(saveToMySQLMenuItem);
 		saveToMySQLMenuItem.addActionListener(new ActionListener() {
-			
+		
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				LoadWorkspace.Instance().makeWorkspace();
 				ArrayList<Shape> shapes = pnlDrawing.getShapeList();
-				SaveToBase mapping = new SaveToBase(shapes, LoadWorkspace.Instance().getWorkspace());
-				mainFrm.dispose();
-				LoadWorkspace.Instance().showWindow();
-				pnlDrawing.clearPanel();
+				Workspace workspace = LoadWorkspace.Instance().getWorkspace();
+				if(LoadWorkspace.Instance().getWorkspaces().isEmpty() || !workspace.getWorkspaceName().equals(LoadWorkspace.Instance().getWorkspaceNameFromJdialog())) {
+					SaveToBase mapping = new SaveToBase(shapes, workspace);
+					LoadWorkspace.Instance().addtoJList(workspace);
+					closeWindowAndClearPanel();
+				} else if(workspace.getWorkspaceName().equals(LoadWorkspace.Instance().getWorkspaceNameFromJdialog())){
+					closeWindowAndClearPanel();
+					
+				}
+				
 			}
 		});
 		
@@ -304,6 +310,7 @@ public class MainFrame {
 	public void setVisibleFrame() {
 		mainFrm.setVisible(true);
 	}
+	
 	public void refreshScreen() {
 		mainFrm.repaint(); 
 	}
@@ -324,6 +331,19 @@ public class MainFrame {
 		pnlDrawing.setShapeList(shapes);
 	}
 	
+	public boolean ReturnIfSameNameAndShapes() {
+		boolean exit = false;
+		if(LoadWorkspace.Instance().getShapesFromReadBase().equals(pnlDrawing.getShapeList()) || LoadWorkspace.Instance().getWorkspaceStringFromJlist().equals(LoadWorkspace.Instance().getWorkspaceNameFromJdialog())){
+			System.out.println("isto");
+			exit = true;
+		}
+		return exit;
+	}
 	
+	private void closeWindowAndClearPanel() {
+		mainFrm.dispose();
+		pnlDrawing.clearPanel();
+		LoadWorkspace.Instance().showWindow();
+	}
 	
 }

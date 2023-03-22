@@ -116,6 +116,8 @@ public class PnlDrawing extends JPanel{
 		
 	}
 	
+	
+	
 	private void rightClick(MouseEvent e) {
 		final JPopupMenu popupMenu =  new JPopupMenu();
 		

@@ -263,7 +263,6 @@ public class MainDialog extends JDialog {
 	    		}
 	}
 	
-	
 	public Integer getWorkspaceID() throws SQLException {
 		Connection conn= DriverManager.getConnection("jdbc:mysql://localhost:3306/paint", "root", "adde22432");
 		Statement stm = conn.createStatement();
@@ -278,5 +277,7 @@ public class MainDialog extends JDialog {
 	    		}
 	    return id;
 	}
+	
+	
 	
 }

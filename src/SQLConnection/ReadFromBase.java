@@ -36,8 +36,6 @@ public class ReadFromBase {
 	    readCircleAndDonut();
 	}
 	
-
-	
 	
 	private void readPoints() throws SQLException {
 		String sql = "Select * From paint.point where id_workspace = "  + id;
@@ -121,7 +119,7 @@ public class ReadFromBase {
 	      return changeablePoint;
 	}
 	
-	public ArrayList<Shape> getShapes(){
+	public ArrayList<Shape> getShapesFromDB(){
 		return shapeList;
 	}
 	
