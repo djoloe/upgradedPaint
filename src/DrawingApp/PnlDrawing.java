@@ -1,24 +1,49 @@
 package DrawingApp;
 
 
+import java.awt.AWTException;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Robot;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.image.BufferStrategy;
+import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferInt;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Random;
 
+import javax.imageio.ImageIO;
+import javax.swing.JButton;
 import javax.swing.JColorChooser;
 import javax.swing.JDialog;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.border.CompoundBorder;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.text.html.HTMLDocument.Iterator;
+import javax.swing.undo.UndoManager;
+import javax.swing.Timer;
 
 import geometry.Circle;
 import geometry.Donut;
@@ -26,6 +51,7 @@ import geometry.Line;
 import geometry.Point;
 import geometry.Rectangle;
 import geometry.Shape;
+import DrawingApp.Status;
 
 public class PnlDrawing extends JPanel{
 
@@ -33,149 +59,274 @@ public class PnlDrawing extends JPanel{
 	private String state;
 	private Point p1, p2;
 	private Frame f = new Frame();
-	private String shapeName;
-	private PnlDrawing pnlDrawing;
+	private Color selectedColor;
+	private Color fillColor;
 	private Shape selectedShape;
+	private ShapeDetailsPanel detailsPanel;
+	private MouseEvent lastEvent;
+	private EditDialog editDialog;
+	private Status status;
+	private ArrayList<Shape> newShapes;
+	private ArrayList<Shape> redoList = new ArrayList<>();
+	private Shape shapeToRedo;
 	
+	private Timer timer = new Timer(200, new ActionListener() {
+	
+	
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				
+				singleClick(lastEvent);
+				timer.stop();
+				
+			}
+		});
 	
 	public PnlDrawing() {
 	
-		pnlDrawing = this;
 		
-		//crtanje
 		this.addMouseListener(new MouseAdapter() {
-			
+		
 			@Override
 			public void mousePressed(MouseEvent e) {
+				if(status == null) {
+					return;
+				} 
 				
+		        
+				detailsPanel =  MainFrame.Instance().getDetailsPanel();
 				
-				switch (state) {
-				case "Select":
-					selectedShape = getSelectedShape(e.getX(), e.getY());
-					if (selectedShape == null) {
-						break;
+				if (timer.isRunning()) {
+					Shape shapeEdit = getSelectedItem(e.getX(), e.getY());
+					if (shapeEdit != null) {
+						EditDialog editDialog = new EditDialog(shapeEdit);
+						editDialog.setVisible(true);	
 					}
 					
-					EditPanel editPanel = new EditPanel(selectedShape,pnlDrawing);
-					editPanel.setSize(650, 450);
-					
-					break;					
-				case "Point":
-					Point p = new Point(e.getX(), e.getY());
-					Color colorPoint = popUpColorChooser();
-					p.setEdgecolor(colorPoint);	
-					shapes.add(p);
-					repaint();
-					
-					break;
-					
-				case "Line":
-					if (p1 == null) {
-						p1 = new Point(e.getX(), e.getY());
-					} else {
-						p2 = new Point(e.getX(), e.getY());
-					}
-					
-					if (p1 != null && p2 != null) {
-						Color colorLine = popUpColorChooser();
-						Line l = new Line(p1, p2);
-						l.setEdgecolor(colorLine);	
-						shapes.add(l);
-						repaint();
-						clearPoints();
-					}
-					break;
-					
-				case "Circle":
-					int radius  ;
-					String textRadius;
-					Point p3;
-					try {
-						Color circleEdgeColor = popUpColorChooser();
-						Color circleFillColor = popUpColorChooser();
-						p3 = new Point(e.getX(), e.getY());
-						textRadius = JOptionPane.showInputDialog(f,"Enter radius","");
-						if( textRadius != null || textRadius.length() > 0  ) {
-							radius = Integer.parseInt(textRadius);
-							Circle c = new Circle(p3,radius);
-							c.setCenter(p3);
-							c.setEdgecolor(circleEdgeColor);
-							c.setFillColor(circleFillColor);
-							shapes.add(c);
-							
-							repaint();
-							
-						}
-					} catch (Exception e2) {
-						System.out.println("Invalid input or you pressed cancel button!");
-						break;
-					}
-					break;
-					
-				case "Rectangle":
-					int width = 0;
-					int height = 0;
-					try {
-						Color colorEdgeRect = popUpColorChooser();
-						Color colorFillRect = popUpColorChooser();
-						Point p4 = new Point(e.getX(), e.getY());
-						String textWidth = JOptionPane.showInputDialog(f,"Enter width");
-						String textHeight = JOptionPane.showInputDialog(f,"Enter height");
-						if(textWidth != null || textHeight != null) {
-							width = Integer.parseInt(textWidth);
-							height = Integer.parseInt(textHeight);
-							Rectangle r = new Rectangle(p4, width, height);
-							r.setEdgecolor(colorEdgeRect);
-							r.setFillColor(colorFillRect);
-							shapes.add(r);
-							repaint();
-						}
-						
-					} catch (Exception e2) {
-						System.out.println("Invalid input or you pressed cancel button!");
-						break;
-					}
-					break;
-					
-				case "Donut":
-					
-					Point p5 = new Point(e.getX(), e.getY());
-					int inner = 0;
-					int radius1 = 0;
-					try {
-						Color colorDonut = popUpColorChooser();
-						String textInner = JOptionPane.showInputDialog(f,"Enter inner");
-						String textRadius1 = JOptionPane.showInputDialog(f,"Enter radius");
-						if(textInner != null || textRadius1 != null) {
-						inner = Integer.parseInt(textInner);
-						radius1 = Integer.parseInt(textRadius1);
-						Donut d = new Donut(p5, radius1, inner);
-						d.setEdgecolor(colorDonut);
-						shapes.add(d);
-						repaint();
-						break;
-						}
-						
-					} catch (Exception e2) {
-						System.out.println("Invalid input is 0 or you pressed cancel button!");
-						break;
-					}
-						
-				}
+					timer.stop();
+		        } else if(e.getButton() == MouseEvent.BUTTON1){
+		        	lastEvent = e;
+		            timer.restart();
+		        } else if(e.getButton() == MouseEvent.BUTTON3){
+		        	rightClick(e);
+		        }
 			}
-			});
-				
-		
+		});
+			
 		
 	}
-	 
-	public Color popUpColorChooser() {
+	
+	
+	
+	private void rightClick(MouseEvent e) {
+		final JPopupMenu popupMenu =  new JPopupMenu();
 		
-		Color initialColor = Color.black;
-		Color color = JColorChooser.showDialog(pnlDrawing, "select color", initialColor );
-		return color;
+		JMenuItem undo = new JMenuItem("Undo");
+		undo.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				undo();
+			}
+		});
+		popupMenu.add(undo);
+		
+		JMenuItem redo = new JMenuItem("Redo");
+		redo.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				redo();
+			}
+		});
+		popupMenu.add(redo);
+		
+		this.setComponentPopupMenu(popupMenu);
+		popupMenu.setVisible(true);
+	}
+	
+	private void singleClick(MouseEvent e) {
+		
+	
+		
+		switch (status) {
+		
+		case Point:
+			Point p = new Point(e.getX(), e.getY());
+			p.setColor(selectedColor);
+			shapes.add(p);
+			repaint();
+			detailsPanel.setValuePointAtPaint(p);
+			break;
+			
+		case Line:
+			if (p1 == null) {
+				p1 = new Point(e.getX(), e.getY());
+			} else {
+				p2 = new Point(e.getX(), e.getY());
+			}
+			
+			if (p1 != null && p2 != null) {				
+				Line l = new Line(p1, p2);
+				l.setColor(selectedColor);
+				shapes.add(l);
+				repaint();
+				detailsPanel.setValueLineAtPaint(l);
+				clearPoints();
+			}
+			break;
+			
+		case Circle:
+			int radius;
+			String textRadius;
+			Point p3;
+			try {
+				p3 = new Point(e.getX(), e.getY());
+				textRadius = JOptionPane.showInputDialog(f,"Enter radius","");
+				if( textRadius != null || textRadius.length() > 0  ) {
+					radius = Integer.parseInt(textRadius);
+					Circle c = new Circle(p3,radius);
+					c.setCenter(p3);
+					c.setColor(selectedColor);
+					c.setFillColor(fillColor);
+					shapes.add(c);
+					repaint();
+					detailsPanel.setValueCircleAtPaint(c);
+				}
+			} catch (Exception e2) {
+				break;
+			}
+			break;
+			
+		case Rectangle:
+			int width = 0;
+			int height = 0;
+			try {
+				Point p4 = new Point(e.getX(), e.getY());
+				String textWidth = JOptionPane.showInputDialog(f,"Enter width");
+				String textHeight = JOptionPane.showInputDialog(f,"Enter height");
+				if(textWidth != null || textHeight != null) {
+					width = Integer.parseInt(textWidth);
+					height = Integer.parseInt(textHeight);
+					Rectangle r = new Rectangle(p4, width, height);
+					r.setColor(selectedColor);
+					r.setFillColor(fillColor);
+					shapes.add(r);
+					detailsPanel.setValueRectAtPaint(r);
+					repaint();
+				}
+				
+			} catch (Exception e2) {
+				break;
+			}
+			break;
+			
+		case Donut:
+			
+			Point p5 = new Point(e.getX(), e.getY());
+			int inner = 0;
+			int radius1 = 0;
+			try {
+				String textInner = JOptionPane.showInputDialog(f,"Enter inner");
+				String textRadius1 = JOptionPane.showInputDialog(f,"Enter radius");
+				if(textInner != null || textRadius1 != null) {
+				inner = Integer.parseInt(textInner);
+				radius1 = Integer.parseInt(textRadius1);
+				Donut d = new Donut(p5, radius1, inner);
+				d.setColor(selectedColor);
+				shapes.add(d);
+				repaint();
+				detailsPanel.setValueDonutAtPaint(d);
+				}
+				
+			} catch (Exception e2) {
+				break;
+			}
+			break;
+		case Select:
+			selectedShape = getSelectedItem(e.getX(), e.getY());
+			detailsPanel =  MainFrame.Instance().getDetailsPanel();
+			detailsPanel.whichShapeToPopulate(selectedShape);
+			
+			break;
+			
+		}
+		
+	}
+	
+	
+	public void saveWithFileChooser() {
+		JFileChooser chooser = new JFileChooser();
+		int result = chooser.showSaveDialog(null);
+		if(result == JFileChooser.APPROVE_OPTION) {
+			try {
+				File file = chooser.getSelectedFile();
+				FileOutputStream opf = new FileOutputStream(file);
+				ObjectOutputStream oop = new ObjectOutputStream(opf);
+				oop.writeObject(shapes);
+				oop.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		} else if (result == JFileChooser.CANCEL_OPTION) {
+            System.out.println("Cancel was selected");
+            
+        }
+	}
+	
+	public void openWithFileChooser() {
+		JFileChooser chooser = new JFileChooser();
+		int result = chooser.showOpenDialog(null);
+        if(result == JFileChooser.APPROVE_OPTION){
+            try
+            {
+            File file = chooser.getSelectedFile();
+        	FileInputStream fis = new FileInputStream(file);
+   			ObjectInputStream ois = new ObjectInputStream(fis);
+   			newShapes = (ArrayList<Shape>) ois.readObject();
+            }
+            catch(Exception io)
+            {
+                io.printStackTrace();
+            }   
+        } else if (result == JFileChooser.CANCEL_OPTION) {
+            System.out.println("Cancel was selected");
+            
+        }
+	
+	}
+	
+	public void undo() {
+		if(shapes.size() > 0) {
+			int index = shapes.size() - 1;
+			shapeToRedo = shapes.get(index);
+			addToRedoList();
+			shapes.remove(index);
+		}
 	}
 
+	public void redo() {
+		if(redoList.size() > 0) {
+		int redoIndex = redoList.size() - 1;
+		shapes.add(redoList.get(redoIndex));
+		redoList.remove(redoIndex);
+		}
+	}
+	
+	private void addToRedoList() {
+		redoList.add(shapeToRedo);
+	}
+	
+
+	public void clearPanel() {
+		shapes.clear();
+	}
+	
+	public void repaintPanel() {
+		this.shapes = newShapes;
+		for (Shape shape : shapes) {
+		
+		}
+		this.repaint();
+	}
 	
 	public void removeObject(Shape shape) {
 		shapes.remove(shape);
@@ -184,7 +335,7 @@ public class PnlDrawing extends JPanel{
 		}
 	}
 	
-	private Shape getSelectedShape(int x, int y) {
+	public Shape getSelectedItem(int x, int y) {
 		Shape selectedItem = null;
 		
 		for (Shape shape : shapes) {
@@ -194,10 +345,18 @@ public class PnlDrawing extends JPanel{
 		}
 		return selectedItem;
 	}
-	 
 	
 	
 	
+	public void setSelectedColor(Color color) {
+		this.selectedColor = color;
+	}
+	
+	public void setFillColor(Color color) {
+		this.fillColor = color;
+	}
+	
+	@Override
 	 public void paintComponent(Graphics g) {
 		 Graphics2D g2d = (Graphics2D) g;
 		 
@@ -209,14 +368,55 @@ public class PnlDrawing extends JPanel{
 		 
 	 }
 	 
-	 public void setState(String state) {
+	 public void setStatus(Status status) {
 		 clearPoints();
-		 this.state = state;
+		 this.status = status;
 	 }
 	 
+	 public String getState() {
+		 return state;
+	 }
 	 private void clearPoints() {
 		 p1 = null;
 		 p2 = null;
 	 }
-}
+	 
+	public Shape getSelectedShape() {
+		return selectedShape;
+	}
+	
+	public ArrayList<Shape> getShapeList(){
+		return shapes;
+	}
+	
+	public void setShapeList(ArrayList<Shape> shapes){
+		this.shapes = shapes;
+	
+	}
+	
+	public  void saveImage() {
+		BufferedImage img = new BufferedImage(this.getWidth(), this.getHeight(), BufferedImage.TYPE_INT_BGR);
+		Graphics g2 =  img.getGraphics();
+		g2.setColor(Color.WHITE);
+		g2.fillRect(0, 0, img.getWidth(), img.getHeight());
+		this.paintAll(g2);
+		
+		JFileChooser fileChooser = new JFileChooser();
+	    if (fileChooser.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
+	        File file = fileChooser.getSelectedFile();
+	        try {
+	            ImageIO.write(img, "png", file);
+	        } catch (IOException ex) {
+	            System.out.println("Failed to save image!");
+	        }
+	    } else {
+	        System.out.println("No file choosen!");
+	    }
+	}
+	}
+	
+	
+
+
+
 

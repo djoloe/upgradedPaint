@@ -8,12 +8,15 @@ import java.awt.GridLayout;
 import java.awt.LayoutManager;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.lang.module.Configuration;
 
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
+
+import DrawingApp.MainFrame;
 
 public class MainApp extends JPanel{
 

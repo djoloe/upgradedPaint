@@ -2,15 +2,18 @@ package geometry;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.io.Serializable;
 
 import DrawingApp.PnlDrawing;
 
 
-public abstract class Shape implements Moveable, Comparable{
+public abstract class Shape implements Moveable, Comparable,Serializable{
+	
 	
 	protected boolean selected;
-	protected Color edgeColor;
+	protected Color color;
 	protected Color fillColor;
+	
 	public Shape() {
 	
 	}
@@ -29,21 +32,23 @@ public abstract class Shape implements Moveable, Comparable{
 		return selected;
 	}
 	
-	public void setEdgecolor(Color color) {
-		this.edgeColor  = color;
+	public void  setColor(Color color) {
+		this.color = color;
 	}
 	
 	public void setFillColor(Color color) {
 		this.fillColor  = color;
 	}
 	
-	public Color getColor() {
-		return edgeColor;
-	}
+	
 	
 	public void setSelected(boolean selected) {
 		this.selected = selected;
 	}
+
+	
+		
+	
 	
 
 	

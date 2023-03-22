@@ -2,9 +2,40 @@ package geometry;
 
 import java.awt.Graphics;
 
-public class Donut extends Circle {
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.DiscriminatorColumn;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.MappedSuperclass;
+import javax.persistence.Table;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
+import Login.Workspace;
+
+
+
+@Entity
+@Table
+public class Donut extends Circle {
+	
+
+	@Column
 	private int innerRadius;
+	
+	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, optional = true)
+	@JoinColumn(name = "id_workspace")
+	@OnDelete(action = OnDeleteAction.CASCADE)
+	private Workspace workspace;
 	
 	public Donut() {
 	
@@ -13,6 +44,13 @@ public class Donut extends Circle {
 	public Donut(Point center, int radius, int innerRadius) {
 		super(center,radius);
 		this.innerRadius = innerRadius;
+
+	}
+	
+	public Donut(Point center, int radius, int innerRadius, Workspace workspace) {
+		super(center,radius);
+		this.innerRadius = innerRadius;
+		this.workspace = workspace;
 
 	}
 	
@@ -55,14 +93,13 @@ public class Donut extends Circle {
 	
 	@Override
 	public void draw(Graphics g) {
-		g.setColor(edgeColor);
-		super.draw(g);
-		g.fillOval(getCenter().getX()-innerRadius,
-				getCenter().getY()-innerRadius, 
-				innerRadius*2, innerRadius*2);
+		g.setColor(color);
 		g.drawOval(getCenter().getX()-innerRadius,
 				getCenter().getY()-innerRadius, 
 				innerRadius*2, innerRadius*2);
+		g.drawOval(getCenter().getX()-radius,
+				getCenter().getY()-radius, 
+				radius*2, radius*2);
 		
 	
 	}

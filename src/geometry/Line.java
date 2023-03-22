@@ -2,10 +2,38 @@ package geometry;
 
 import java.awt.Graphics;
 
-public class Line extends Shape {
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
+import Login.Workspace;
+
+
+
+@Entity
+@Table
+public class Line extends Shape {
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private int idline;
+	@Column 
 	private Point startPoint;
+	@Column
 	private Point endPoint;
+	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, optional = true)
+	@JoinColumn(name = "id_workspace")
+	@OnDelete(action = OnDeleteAction.CASCADE)
+	private Workspace workspace;
 	
 	public Line() {
 	}
@@ -13,6 +41,11 @@ public class Line extends Shape {
 	public Line(Point startPoint, Point endPoint) {
 		this.startPoint = startPoint;
 		this.endPoint = endPoint;
+	}
+	
+	public Line(Point startPoint, Point endPoint, Workspace workspace) {
+		this(startPoint,endPoint);
+		this.workspace = workspace;
 	}
 	
 	public Line(Point startPoint, Point endPoint, boolean selected) {
@@ -26,8 +59,9 @@ public class Line extends Shape {
 	}
 	
 	public boolean contains(int x, int y) {
-		return length() - (startPoint.distance(new Point(x,y))
-			+ endPoint.distance(new Point(x,y))) <= 2;
+		double lenght = Math.abs(length() - (startPoint.distance(new Point(x,y))
+				+ endPoint.distance(new Point(x,y))));
+		return lenght <= 2;
 	}
 	
 	@Override
@@ -49,7 +83,7 @@ public class Line extends Shape {
 	
 	@Override
 	public void draw(Graphics g) {
-		g.setColor(edgeColor);
+		g.setColor(color);
 		g.drawLine(startPoint.getX(), startPoint.getY(),
 				endPoint.getX(), endPoint.getY());
 	
@@ -57,7 +91,6 @@ public class Line extends Shape {
 	
 	public void moveBy(int byX, int byY) {
 		startPoint.moveBy(byX, byY);
-		//startPoint.setX(startPoint.getX()+byX));
 		endPoint.moveBy(byX, byY);
 	}
 

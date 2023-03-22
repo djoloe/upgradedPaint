@@ -1,36 +1,86 @@
 package DrawingApp;
 
+import java.awt.AWTException;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Frame;
+import java.awt.Graphics2D;
 import java.awt.GridLayout;
+import java.awt.Image;
+import java.awt.PageAttributes.OriginType;
+import java.awt.Robot;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.lang.System.Logger;
+import java.lang.System.Logger.Level;
+import java.sql.SQLException;
+import java.util.ArrayList;
 
+import javax.imageio.ImageIO;
+import javax.lang.model.util.Elements.Origin;
+import javax.swing.BorderFactory;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JButton;
+import javax.swing.JColorChooser;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SpringLayout;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
+import org.hibernate.loader.plan.spi.LoadPlan.Disposition;
+
+import DrawingApp.PnlDrawing;
+import Login.LoadWorkspace;
+import Login.MainDialog;
+import Login.User;
+import Login.Workspace;
+import SQLConnection.ReadFromBase;
+import SQLConnection.SaveToBase;
+import geometry.Circle;
+import geometry.Donut;
+import geometry.Line;
+import geometry.Point;
+import geometry.Rectangle;
 import geometry.Shape;
+import javax.swing.JMenuBar;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JLabel;
+import javax.swing.JTextField;
+import java.awt.SystemColor;
 	
 public class MainFrame {
 	
 	private static MainFrame mainFrame;
 	private JFrame mainFrm;
-	private String[] choices = { "Point","Line", "Circle","Rectangle", "Donut", "Select"};
-	private JComboBox<String> comboBox;
 	private PnlDrawing pnlDrawing;
-	private String item;
 	private JPanel panel;
-	private DefaultListCellRenderer comboBoxRenderer;
-	
+	private JMenuBar menuBar;
+	private JMenu menuFile;
+	private JMenuItem newMenuItem;
+	private JPanel bottomArea;
+	private ShapeDetailsPanel detailsPanel;
+	private JButton buttonSelect;
+	private JMenuItem printMenuItem;
+	private JMenuItem saveToMySQLMenuItem;
+	private User user;
 	
 	public static MainFrame Instance() {
 		if (mainFrame == null) {
@@ -39,56 +89,261 @@ public class MainFrame {
 		return mainFrame;
 	}
 	
+	
 	private MainFrame() {
 		
 		mainFrm = new JFrame();
-		mainFrm.setBounds(100, 100, 650, 450);
-		mainFrm.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		mainFrm.setBounds(100, 100, 950, 549);
+		mainFrm.addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent e) {
+				LoadWorkspace.Instance().showWindow();
+				super.windowClosing(e);
+			}
+		});
 		SpringLayout springLayout = new SpringLayout();
 		mainFrm.getContentPane().setLayout(springLayout);
 		
-		comboBox = new JComboBox<String>(choices);
-		springLayout.putConstraint(SpringLayout.NORTH, comboBox, 0, SpringLayout.NORTH, mainFrm.getContentPane());
-		springLayout.putConstraint(SpringLayout.WEST, comboBox, 0, SpringLayout.WEST, mainFrm.getContentPane());
-		springLayout.putConstraint(SpringLayout.SOUTH, comboBox, 31, SpringLayout.NORTH, mainFrm.getContentPane());
-		springLayout.putConstraint(SpringLayout.EAST, comboBox, 200, SpringLayout.WEST, mainFrm.getContentPane());
-		comboBoxRenderer = new DefaultListCellRenderer();
-		comboBoxRenderer.setHorizontalAlignment(DefaultListCellRenderer.CENTER);
-		comboBox.setRenderer(comboBoxRenderer);
-		mainFrm.getContentPane().add(comboBox);
-		
-		
 		
 		pnlDrawing = new PnlDrawing();
-		springLayout.putConstraint(SpringLayout.NORTH, pnlDrawing, 0, SpringLayout.SOUTH, comboBox);
+		springLayout.putConstraint(SpringLayout.SOUTH, pnlDrawing, -124, SpringLayout.SOUTH, mainFrm.getContentPane());
+		pnlDrawing.setBackground(SystemColor.activeCaption);
 		springLayout.putConstraint(SpringLayout.WEST, pnlDrawing, 0, SpringLayout.WEST, mainFrm.getContentPane());
-		springLayout.putConstraint(SpringLayout.SOUTH, pnlDrawing, 66, SpringLayout.SOUTH, mainFrm.getContentPane());
-		springLayout.putConstraint(SpringLayout.EAST, pnlDrawing, 650, SpringLayout.WEST, mainFrm.getContentPane());
 		mainFrm.getContentPane().add(pnlDrawing);
 		
-		
-		
 		pnlDrawing.setBounds(0, 0, 66, 650);
+		pnlDrawing.setBorder(BorderFactory.createLineBorder(Color.black));
 		pnlDrawing.setVisible(true);
-		pnlDrawing.setState(choices[0]);
-		mainFrm.setVisible(true);
 		
 		
-		comboBox.addActionListener(new ActionListener() {
-	        @Override
-	        public void actionPerformed(ActionEvent e) {
-	        	if (e.getActionCommand() == "comboBoxChanged") {
-	        		item = (String) comboBox.getSelectedItem();
-	        		pnlDrawing.setState(item);
-	        	}
-	        }
-	    });
+		menuBar = new JMenuBar();
+		springLayout.putConstraint(SpringLayout.NORTH, pnlDrawing, 6, SpringLayout.SOUTH, menuBar);
+		springLayout.putConstraint(SpringLayout.NORTH, menuBar, 0, SpringLayout.NORTH, mainFrm.getContentPane());
+		springLayout.putConstraint(SpringLayout.SOUTH, menuBar, -450, SpringLayout.SOUTH, mainFrm.getContentPane());
+		springLayout.putConstraint(SpringLayout.WEST, menuBar, 10, SpringLayout.WEST, mainFrm.getContentPane());
+		menuBar.setPreferredSize(new Dimension(30,10));
+		mainFrm.getContentPane().add(menuBar);
+		
+		
+		JButton buttonPoint = new JButton("Point");
+		springLayout.putConstraint(SpringLayout.NORTH, buttonPoint, 10, SpringLayout.NORTH, mainFrm.getContentPane());
+		springLayout.putConstraint(SpringLayout.SOUTH, buttonPoint, -6, SpringLayout.NORTH, pnlDrawing);
+		springLayout.putConstraint(SpringLayout.EAST, buttonPoint, -768, SpringLayout.EAST, mainFrm.getContentPane());
+		buttonPoint.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				pnlDrawing.setStatus(Status.Point);
+			}
+		});
+		mainFrm.getContentPane().add(buttonPoint);
+		
+		JButton buttonLine = new JButton("Line");
+		springLayout.putConstraint(SpringLayout.NORTH, buttonLine, 0, SpringLayout.NORTH, buttonPoint);
+		springLayout.putConstraint(SpringLayout.WEST, buttonLine, 6, SpringLayout.EAST, buttonPoint);
+		springLayout.putConstraint(SpringLayout.SOUTH, buttonLine, -6, SpringLayout.NORTH, pnlDrawing);
+		buttonLine.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				pnlDrawing.setStatus(Status.Line);
+			}
+		});
+		mainFrm.getContentPane().add(buttonLine);
+		
+		JButton buttonRectangle = new JButton("Rectangle");
+		springLayout.putConstraint(SpringLayout.NORTH, buttonRectangle, 0, SpringLayout.NORTH, buttonPoint);
+		springLayout.putConstraint(SpringLayout.WEST, buttonRectangle, 6, SpringLayout.EAST, buttonLine);
+		springLayout.putConstraint(SpringLayout.SOUTH, buttonRectangle, -6, SpringLayout.NORTH, pnlDrawing);
+		springLayout.putConstraint(SpringLayout.EAST, buttonRectangle, -593, SpringLayout.EAST, mainFrm.getContentPane());
+		buttonRectangle.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				pnlDrawing.setStatus(Status.Rectangle);
+			}
+		});
+		mainFrm.getContentPane().add(buttonRectangle);
+		
+		JButton buttonCircle = new JButton("Circle");
+		springLayout.putConstraint(SpringLayout.NORTH, buttonCircle, 10, SpringLayout.NORTH, mainFrm.getContentPane());
+		springLayout.putConstraint(SpringLayout.WEST, buttonCircle, 6, SpringLayout.EAST, buttonRectangle);
+		springLayout.putConstraint(SpringLayout.SOUTH, buttonCircle, -6, SpringLayout.NORTH, pnlDrawing);
+		buttonCircle.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				pnlDrawing.setStatus(Status.Circle);
+			}
+		});
+		mainFrm.getContentPane().add(buttonCircle);
+		
+		JButton buttonDonut = new JButton("Donut");
+		springLayout.putConstraint(SpringLayout.NORTH, buttonDonut, 10, SpringLayout.NORTH, mainFrm.getContentPane());
+		springLayout.putConstraint(SpringLayout.WEST, buttonDonut, 6, SpringLayout.EAST, buttonCircle);
+		springLayout.putConstraint(SpringLayout.SOUTH, buttonDonut, -6, SpringLayout.NORTH, pnlDrawing);
+		buttonDonut.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				pnlDrawing.setStatus(Status.Donut);
+			}
+		});
+		mainFrm.getContentPane().add(buttonDonut);
+		
+		menuFile = new JMenu("File");
+		menuBar.add(menuFile);
+		springLayout.putConstraint(SpringLayout.NORTH, menuFile, 0, SpringLayout.NORTH, mainFrm.getContentPane());
+		springLayout.putConstraint(SpringLayout.WEST, menuFile, 144, SpringLayout.EAST, menuBar);
+		
+		newMenuItem = new JMenuItem("New");
+		newMenuItem.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				
+			}
+		});
+		menuFile.add(newMenuItem);
+		
+		printMenuItem = new JMenuItem("Save as png");
+		printMenuItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				pnlDrawing.saveImage();
+			}
+		});
+		menuFile.add(printMenuItem);
+		
+		saveToMySQLMenuItem = new JMenuItem("Save to mySQL");
+		menuFile.add(saveToMySQLMenuItem);
+		saveToMySQLMenuItem.addActionListener(new ActionListener() {
+		
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				LoadWorkspace.Instance().makeWorkspace();
+				ArrayList<Shape> shapes = pnlDrawing.getShapeList();
+				Workspace workspace = LoadWorkspace.Instance().getWorkspace();
+				if(LoadWorkspace.Instance().getWorkspaces().isEmpty() || !workspace.getWorkspaceName().equals(LoadWorkspace.Instance().getWorkspaceNameFromJdialog())) {
+					SaveToBase mapping = new SaveToBase(shapes, workspace);
+					LoadWorkspace.Instance().addtoJList(workspace);
+					closeWindowAndClearPanel();
+				} else if(workspace.getWorkspaceName().equals(LoadWorkspace.Instance().getWorkspaceNameFromJdialog())){
+					closeWindowAndClearPanel();
+					
+				}
+				
+			}
+		});
+		
+		
+		bottomArea = new JPanel();
+		springLayout.putConstraint(SpringLayout.NORTH, bottomArea, 1, SpringLayout.SOUTH, pnlDrawing);
+		springLayout.putConstraint(SpringLayout.SOUTH, bottomArea, 0, SpringLayout.SOUTH, mainFrm.getContentPane());
+		springLayout.putConstraint(SpringLayout.EAST, pnlDrawing, 0, SpringLayout.EAST, bottomArea);
+		springLayout.putConstraint(SpringLayout.WEST, bottomArea, 0, SpringLayout.WEST, mainFrm.getContentPane());
+		springLayout.putConstraint(SpringLayout.EAST, bottomArea, 0, SpringLayout.EAST, mainFrm.getContentPane());
+		bottomArea.setBackground(SystemColor.activeCaption);
+		mainFrm.getContentPane().add(bottomArea);
+		
+		
+		String state = pnlDrawing.getState();
+		detailsPanel = new ShapeDetailsPanel(bottomArea);
+		
+		
+		
+		JButton buttonColor = new JButton("Color");
+		springLayout.putConstraint(SpringLayout.NORTH, buttonColor, 10, SpringLayout.NORTH, mainFrm.getContentPane());
+		springLayout.putConstraint(SpringLayout.WEST, buttonColor, 99, SpringLayout.EAST, buttonDonut);
+		springLayout.putConstraint(SpringLayout.SOUTH, buttonColor, -6, SpringLayout.NORTH, pnlDrawing);
+		springLayout.putConstraint(SpringLayout.EAST, buttonColor, -271, SpringLayout.EAST, mainFrm.getContentPane());
+		buttonColor.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				 Color color = popUpColorChooser();
+				 pnlDrawing.setSelectedColor(color); 
+			}
+		});
+		mainFrm.getContentPane().add(buttonColor);
+		
+		JButton buttonFill = new JButton("Fill");
+		springLayout.putConstraint(SpringLayout.NORTH, buttonFill, 10, SpringLayout.NORTH, mainFrm.getContentPane());
+		springLayout.putConstraint(SpringLayout.WEST, buttonFill, 6, SpringLayout.EAST, buttonColor);
+		springLayout.putConstraint(SpringLayout.SOUTH, buttonFill, -6, SpringLayout.NORTH, pnlDrawing);
+		mainFrm.getContentPane().add(buttonFill);
+		buttonFill.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				 Color fillColor = popUpColorChooser();
+				pnlDrawing.setFillColor(fillColor);
+				 
+			}
+		});
+		
+		buttonSelect = new JButton("Select");
+		springLayout.putConstraint(SpringLayout.NORTH, buttonSelect, 0, SpringLayout.NORTH, buttonPoint);
+		springLayout.putConstraint(SpringLayout.WEST, buttonSelect, 6, SpringLayout.EAST, buttonFill);
+		springLayout.putConstraint(SpringLayout.SOUTH, buttonSelect, -6, SpringLayout.NORTH, pnlDrawing);
+		springLayout.putConstraint(SpringLayout.EAST, buttonSelect, -121, SpringLayout.EAST, mainFrm.getContentPane());
+		mainFrm.getContentPane().add(buttonSelect);
+		buttonSelect.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				pnlDrawing.setStatus(Status.Select);
+			}
+		});
+		
+		JButton buttonDelete = new JButton("Delete");
+		springLayout.putConstraint(SpringLayout.NORTH, buttonDelete, 0, SpringLayout.NORTH, buttonPoint);
+		springLayout.putConstraint(SpringLayout.WEST, buttonDelete, 6, SpringLayout.EAST, buttonSelect);
+		springLayout.putConstraint(SpringLayout.SOUTH, buttonDelete, -6, SpringLayout.NORTH, pnlDrawing);
+		mainFrm.getContentPane().add(buttonDelete);
+		buttonDelete.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				Shape shape = pnlDrawing.getSelectedShape();
+				if(shape != null && pnlDrawing.getShapeList().size() > 0) {
+					DeleteDialog deleteDialog = new DeleteDialog(shape, pnlDrawing.getShapeList());
+					deleteDialog.setVisible(true);
+				}
+				
+			}
+		});
+		
+		
+	}
 	
-		
+	
+	
+	public Color popUpColorChooser() {
+			
+			Color initialColor = Color.black;
+			Color color = JColorChooser.showDialog(pnlDrawing, "select color", initialColor);
+			return color;
+	}
+	
+	public void setVisibleFrame() {
+		mainFrm.setVisible(true);
 	}
 	
 	public void refreshScreen() {
 		mainFrm.repaint(); 
+	}
+	
+	public ShapeDetailsPanel getDetailsPanel() {
+		return detailsPanel;
+	}
+	
+	public JPanel getBottomAreaPanel() {
+		return bottomArea;
+	}
+	
+	public void setUser(User user) {
+		this.user = user;
+	}
+	
+	public void paintShapesFromBase(ArrayList<Shape> shapes) {
+		pnlDrawing.setShapeList(shapes);
+	}
+	
+	public boolean ReturnIfSameNameAndShapes() {
+		boolean exit = false;
+		if(LoadWorkspace.Instance().getShapesFromReadBase().equals(pnlDrawing.getShapeList()) || LoadWorkspace.Instance().getWorkspaceStringFromJlist().equals(LoadWorkspace.Instance().getWorkspaceNameFromJdialog())){
+			System.out.println("isto");
+			exit = true;
+		}
+		return exit;
+	}
+	
+	private void closeWindowAndClearPanel() {
+		mainFrm.dispose();
+		pnlDrawing.clearPanel();
+		LoadWorkspace.Instance().showWindow();
 	}
 	
 }

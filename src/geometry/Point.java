@@ -2,11 +2,36 @@ package geometry;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.io.Serializable;
 
-public class Point extends Shape{
+import javax.persistence.*;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
+import Login.User;
+import Login.Workspace;
+
+
+
+@Entity
+@Table
+public class Point extends Shape {
+	
+	
+	
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private int idpoint;
+	@Column(name="x")
 	private int x;
+	@Column(name="y")
 	private int y;
+	
+	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, optional = true)
+	@JoinColumn(name = "id_workspace")
+	@OnDelete(action = OnDeleteAction.CASCADE)
+	private Workspace workspace;
 	
 	public Point() {
 		
@@ -22,6 +47,10 @@ public class Point extends Shape{
 		this.selected = selected;
 	}
 	
+	public Point(int x, int y, Workspace workspace) {
+		this(x,y);
+		this.workspace = workspace;
+	}
 	
 	
 	public double distance(int x, int y) {
@@ -42,7 +71,7 @@ public class Point extends Shape{
 	
 	@Override
 	public void draw(Graphics g) {
-		g.setColor(edgeColor);
+		g.setColor(color);
 		g.drawLine(x - 2, y, x + 2, y);
 		g.drawLine(x, y - 2, x, y + 2);
 		

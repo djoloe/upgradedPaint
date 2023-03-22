@@ -143,9 +143,9 @@ public class EditPanel extends JFrame{
 				case "Point":
 					int x = Integer.parseInt( JOptionPane.showInputDialog(f,"Enter x:"));
 					int y = Integer.parseInt( JOptionPane.showInputDialog(f,"Enter y:")); 
-					Color newPointColor = pnlDrawing.popUpColorChooser();
+//					Color newPointColor = pnlDrawing.popUpColorChooser();
 					Point p = (Point) shape;
-					p.setEdgecolor(newPointColor);
+//					p.setEdgecolor(newPointColor);
 					p.setX(x);
 					p.setY(y);
 					
@@ -160,14 +160,14 @@ public class EditPanel extends JFrame{
 						break;
 					}
 					Line l = (Line) shape;
-					Color newLineColor = pnlDrawing.popUpColorChooser();
+//					Color newLineColor = pnlDrawing.popUpColorChooser();
 					Point tempStart = l.getStartPoint();
 					tempStart.setX(x1);
 					tempStart.setY(y1);
 					Point tempEnd = l.getEndPoint();
 					tempEnd.setX(x2);
 					tempEnd.setY(y2);
-					l.setEdgecolor(newLineColor);
+//					l.setEdgecolor(newLineColor);
 					l.setStartPoint(tempStart);
 					l.setEndPoint(tempEnd);
 					
@@ -177,12 +177,12 @@ public class EditPanel extends JFrame{
 						int circleX = Integer.parseInt( JOptionPane.showInputDialog(f,"Enter x of center:"));
 						int circleY = Integer.parseInt( JOptionPane.showInputDialog(f,"Enter y of center:"));
 						int circleR = Integer.parseInt( JOptionPane.showInputDialog(f,"Enter radius:"));
-						Color newCircleEdgeColor = pnlDrawing.popUpColorChooser();
-						Color newCircleFillcolor = pnlDrawing.popUpColorChooser();
+//						Color newCircleEdgeColor = pnlDrawing.popUpColorChooser();
+//						Color newCircleFillcolor = pnlDrawing.popUpColorChooser();
 						Circle c = (Circle) shape;
 						Point centerP = c.getCenter();
-						c.setEdgecolor(newCircleEdgeColor);
-						c.setFillColor(newCircleFillcolor);
+//						c.setEdgecolor(newCircleEdgeColor);
+//						c.setFillColor(newCircleFillcolor);
 						centerP.setX(circleX);
 						centerP.setY(circleY);
 						try {
@@ -202,11 +202,11 @@ public class EditPanel extends JFrame{
 						int rectWidth = Integer.parseInt( JOptionPane.showInputDialog(f,"Enter width:"));
 						int rectHeight = Integer.parseInt( JOptionPane.showInputDialog(f,"Enter height:"));
 						Rectangle r = (Rectangle) shape;
-						Color newRectEdgeColor = pnlDrawing.popUpColorChooser();
-						Color newRectFillcolor = pnlDrawing.popUpColorChooser();
+//						Color newRectEdgeColor = pnlDrawing.popUpColorChooser();
+//						Color newRectFillcolor = pnlDrawing.popUpColorChooser();
 						Point upperLeft = r.getUpperLeft();
-						r.setEdgecolor(newRectEdgeColor);
-						r.setEdgecolor(newRectFillcolor);
+//						r.setEdgecolor(newRectEdgeColor);
+//						r.setEdgecolor(newRectFillcolor);
 						upperLeft.setX(rectX);
 						upperLeft.setY(rectY);
 						r.setWidth(rectWidth);
@@ -223,10 +223,10 @@ public class EditPanel extends JFrame{
 						int donutR = Integer.parseInt( JOptionPane.showInputDialog(f,"Enter radius:"));
 						Donut d = (Donut) shape;
 						Point centerDonut = d.getCenter();
-						Color newDonutColor = pnlDrawing.popUpColorChooser();
+//						Color newDonutColor = pnlDrawing.popUpColorChooser();
 						centerDonut.setX(donutX);
 						centerDonut.setY(donutY);
-						d.setEdgecolor(newDonutColor);
+//						d.setEdgecolor(newDonutColor);
 						try {
 							d.setRadius(donutR);
 						} catch (Exception e1) {

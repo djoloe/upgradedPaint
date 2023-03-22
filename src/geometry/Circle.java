@@ -2,10 +2,42 @@ package geometry;
 
 import java.awt.Graphics;
 
-public class Circle extends Shape {
+import javax.persistence.AttributeOverride;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
+import Login.Workspace;
+
+
+@Entity
+@Table
+public class Circle extends Shape {
+	
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private int idcircle;
+	
+	@Column
 	protected int radius;
+	
+	@Column
 	private Point center;
+	
+	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, optional = true)
+	@JoinColumn(name = "id_workspace")
+	@OnDelete(action = OnDeleteAction.CASCADE)
+	private Workspace workspace;
 	
 	public Circle() {
 		
@@ -15,7 +47,12 @@ public class Circle extends Shape {
 		this.center = center;
 		this.radius = radius;
 	}
-
+	
+	public Circle(Point center, int radius, Workspace workspace) {
+		this(center,radius);
+		this.workspace = workspace;
+	}
+	
 	public Circle(Point center, int radius, boolean selected) {
 		this(center, radius);
 		this.selected = selected;
@@ -56,7 +93,7 @@ public class Circle extends Shape {
 
 	@Override
 	public void draw(Graphics g) {
-		g.setColor(edgeColor);
+		g.setColor(color);
 		g.drawOval(center.getX() - radius, center.getY() - radius, radius * 2, radius * 2);
 		g.setColor(fillColor);
 		g.fillOval(center.getX() - radius, center.getY() - radius, radius * 2, radius * 2);
