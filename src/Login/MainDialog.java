@@ -27,8 +27,11 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
 
+import com.mysql.cj.protocol.Resultset;
+
 import DrawingApp.MainApp;
 import DrawingApp.MainFrame;
+import SQLConnection.Config;
 import geometry.Point;
 import geometry.Shape;
 
@@ -51,6 +54,8 @@ public class MainDialog extends JDialog {
 	private String password;
 	private static final int SALT = 1562425;
 	private static MainDialog dialog;
+	private Config configuration;
+	private int counter = 0;
 	/**
 	 * Launch the application.
 	 */
@@ -142,7 +147,12 @@ public class MainDialog extends JDialog {
 								labelEmptyPassword.setVisible(true);
 							} else if(checkPassword(loginTestUser) == true){
 								chooseWorkspace();
-								fillJList();
+								if(counter ==0) {
+									fillJList();
+								} else {
+									LoadWorkspace.Instance().setVisibleJList();
+								}
+								
 								LoadWorkspace.Instance().enableButton();
 								dispose();
 							} else {
@@ -176,9 +186,8 @@ public class MainDialog extends JDialog {
 	}
 	
 	private void setUpConfig() {
-		Configuration cfg = new Configuration().configure();
-		cfg.addAnnotatedClass(User.class);
-		cfg.addAnnotatedClass(Workspace.class);
+		configuration = new Config();
+		Configuration cfg = configuration.getCfg();
 		SessionFactory sf = cfg.buildSessionFactory();
 		session = sf.openSession();
 		tx = session.beginTransaction();
@@ -209,13 +218,8 @@ public class MainDialog extends JDialog {
 	}
 	
 	private String readUserForLogin() throws SQLException {
-		Connection conn= DriverManager.getConnection("jdbc:mysql://localhost:3306/paint", "root", "adde22432");
-		Statement stm = conn.createStatement();
-		String sql = "Select * From paint.user";
-	    ResultSet rst;
-	    rst = stm.executeQuery(sql);
-	    String checkUsername = null;
-	   
+		ResultSet rst = configuration.openConnection("Select * From paint.user");
+		String checkUsername = null;
 	    while (rst.next()) {
 	    	checkUsername = rst.getString("username");
 	    }
@@ -223,7 +227,6 @@ public class MainDialog extends JDialog {
 	}
 	
 	private boolean checkPassword(String loginTestUser) throws SQLException {
-		
 		Connection conn= DriverManager.getConnection("jdbc:mysql://localhost:3306/paint", "root", "adde22432");
 		Statement stm = conn.createStatement();
 		String sql = "Select * From paint.user";
@@ -247,29 +250,23 @@ public class MainDialog extends JDialog {
 	
 	
 	private void chooseWorkspace() {
-		LoadWorkspace.Instance();
+		LoadWorkspace.Instance().setVisible(true);;
 		
 	}
 	
 	public void fillJList() throws SQLException {
-		Connection conn= DriverManager.getConnection("jdbc:mysql://localhost:3306/paint", "root", "adde22432");
-		Statement stm = conn.createStatement();
-		String sql = "Select * From paint.workspace where user_id = " + loggedUser.getIduser() + ";";
-	    ResultSet rst;
-	    rst = stm.executeQuery(sql);
+		ResultSet rst = configuration.openConnection("Select * From paint.workspace where user_id = " + loggedUser.getIduser());
 	    while (rst.next()) {
 	    		Workspace loggedUserWorkspace = new Workspace(rst.getString("workspaceName"));
 	    		LoadWorkspace.Instance().addtoJList(loggedUserWorkspace);
 	    		}
+	    counter++;
 	}
 	
+
 	public Integer getWorkspaceID() throws SQLException {
-		Connection conn= DriverManager.getConnection("jdbc:mysql://localhost:3306/paint", "root", "adde22432");
-		Statement stm = conn.createStatement();
-		String sql = "Select * From paint.workspace";	
-	    ResultSet rst;
+		ResultSet rst = configuration.openConnection("Select * From paint.workspace");
 	    int id = 0;
-	    rst = stm.executeQuery(sql);
 	    while (rst.next()) {
 	    			if(rst.getString("workspaceName").equals(LoadWorkspace.Instance().getWorkspaceStringFromJlist())) {
 	    				id = rst.getInt("idWorkspace");
@@ -279,5 +276,12 @@ public class MainDialog extends JDialog {
 	}
 	
 	
+	
+	public void setVisibleAndClearFields(boolean b) {
+		dialog.setVisible(true);
+		passwordField.setText("");
+		fieldUsername.setText("");
+		
+	}
 	
 }

@@ -1,5 +1,10 @@
 package SQLConnection;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 
 import org.hibernate.cfg.Configuration;
@@ -36,6 +41,13 @@ public class Config {
 		return cfg;
 	}
 	
+	public ResultSet openConnection(String sql) throws SQLException {
+		Connection conn= DriverManager.getConnection("jdbc:mysql://localhost:3306/paint", "root", "adde22432");
+		Statement stm = conn.createStatement();
+	    ResultSet rst;
+	    rst = stm.executeQuery(sql);
+		return rst;
+	}
 	
 	
 	

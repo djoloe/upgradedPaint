@@ -31,6 +31,7 @@ import org.hibernate.cfg.Configuration;
 
 import DrawingApp.MainFrame;
 import DrawingApp.PnlDrawing;
+import SQLConnection.Config;
 import SQLConnection.ReadFromBase;
 import geometry.Line;
 import geometry.Point;
@@ -113,7 +114,7 @@ public class LoadWorkspace extends JDialog {
 			buttonNew.addActionListener(new ActionListener() {	
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					MainFrame.Instance();
+					MainFrame.Instance().checkPanelFirst();
 					MainFrame.Instance().setVisibleFrame();
 					dialog.dispose();
 					
@@ -130,7 +131,8 @@ public class LoadWorkspace extends JDialog {
 				
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					dispose();				
+					dispose();
+					MainDialog.Instance().setVisibleAndClearFields(true);
 				}
 			});
 			
@@ -147,6 +149,7 @@ public class LoadWorkspace extends JDialog {
 				public void actionPerformed(ActionEvent e) {
 					int id = 0;
 					try {
+						handleWorkSpaceString();
 						id = MainDialog.Instance().getWorkspaceID();
 					} catch (SQLException e1) {
 						// TODO Auto-generated catch block
@@ -156,6 +159,7 @@ public class LoadWorkspace extends JDialog {
 						ReadFromBase read = new ReadFromBase(id);
 						shapes = read.getShapesFromDB();
 						MainFrame.Instance().paintShapesFromBase(shapes);
+						MainFrame.Instance().setVisibleFrame();
 					} catch (ClassNotFoundException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
@@ -165,9 +169,7 @@ public class LoadWorkspace extends JDialog {
 					} catch (IOException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
-					}
-//					
-					
+					}								
 				}
 
 				
@@ -185,6 +187,7 @@ public class LoadWorkspace extends JDialog {
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					try {
+						handleWorkSpaceString();
 						removeWorkspace();
 					} catch (SQLException e1) {
 						// TODO Auto-generated catch block
@@ -206,15 +209,7 @@ public class LoadWorkspace extends JDialog {
 		enableButton();
 	}
 	
-	private void setUpConfig() {
-		Configuration cfg = new Configuration().configure();
-		cfg.addAnnotatedClass(User.class);
-		cfg.addAnnotatedClass(Workspace.class);
-		SessionFactory sf = cfg.buildSessionFactory();
-		session = sf.openSession();
-		tx = session.beginTransaction();
-		
-	}
+	
 	
 	public void enableButton() {
 		if(!(workspaces.size() < 0)) {
@@ -231,7 +226,7 @@ public class LoadWorkspace extends JDialog {
 	public void makeWorkspace() {
 		Frame f = new Frame();
 		workSpaceName = JOptionPane.showInputDialog(f, "Enter workspace name: ");
-		workspace = new Workspace(workSpaceName, loggedUser);
+		workspace = new Workspace(workSpaceName,loggedUser);
 		loggedUser.setWorkspace(workspace);
 		
 	}
@@ -263,12 +258,17 @@ public class LoadWorkspace extends JDialog {
 		workspaces.removeElement(workspaceForDelete);
 		}
 	
-	private ResultSet openConnection(String sql) throws SQLException {
-		Connection conn= DriverManager.getConnection("jdbc:mysql://localhost:3306/paint", "root", "adde22432");
-		Statement stm = conn.createStatement();
-	    ResultSet rst;
-	    rst = stm.executeQuery(sql);
-		return rst;
+	
+	public boolean restrictionWhenSaving() throws SQLException {
+		Config configuration = new Config();
+		ResultSet rst = configuration.openConnection("Select * From paint.workspace");
+		boolean flag = false;
+		 while (rst.next()) {
+ 			if(rst.getString("workspaceName").equals(LoadWorkspace.Instance().getWorkspaceNameFromJdialog())) {
+ 				flag = true;
+ 			}
+ 		}
+		return flag;
 	}
 	
 	public String getWorkspaceNameFromJdialog() {
@@ -284,6 +284,11 @@ public class LoadWorkspace extends JDialog {
 		return workspaces;
 		
 	}
+	
+	public void setVisibleJList() {
+		workspacesList.setVisible(true);
+	}
+	
 	
 }
 	

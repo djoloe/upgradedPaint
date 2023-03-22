@@ -40,8 +40,7 @@ public class SaveToBase {
 		SessionFactory sf = configuration.buildSessionFactory();
 		session = sf.openSession();
 		Transaction tx = session.beginTransaction();
-		
-		
+	
 			
 		for (Shape shape : shapes) {
 			if(shape instanceof Point) {

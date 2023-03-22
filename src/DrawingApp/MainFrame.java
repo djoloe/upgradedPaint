@@ -110,7 +110,6 @@ public class MainFrame {
 		pnlDrawing.setBackground(SystemColor.activeCaption);
 		springLayout.putConstraint(SpringLayout.WEST, pnlDrawing, 0, SpringLayout.WEST, mainFrm.getContentPane());
 		mainFrm.getContentPane().add(pnlDrawing);
-		
 		pnlDrawing.setBounds(0, 0, 66, 650);
 		pnlDrawing.setBorder(BorderFactory.createLineBorder(Color.black));
 		pnlDrawing.setVisible(true);
@@ -212,13 +211,18 @@ public class MainFrame {
 				LoadWorkspace.Instance().makeWorkspace();
 				ArrayList<Shape> shapes = pnlDrawing.getShapeList();
 				Workspace workspace = LoadWorkspace.Instance().getWorkspace();
-				if(LoadWorkspace.Instance().getWorkspaces().isEmpty() || !workspace.getWorkspaceName().equals(LoadWorkspace.Instance().getWorkspaceNameFromJdialog())) {
-					SaveToBase mapping = new SaveToBase(shapes, workspace);
-					LoadWorkspace.Instance().addtoJList(workspace);
-					closeWindowAndClearPanel();
-				} else if(workspace.getWorkspaceName().equals(LoadWorkspace.Instance().getWorkspaceNameFromJdialog())){
-					closeWindowAndClearPanel();
-					
+				try {
+					if(!LoadWorkspace.Instance().restrictionWhenSaving() == true) {
+						SaveToBase mapping = new SaveToBase(shapes, workspace);
+						LoadWorkspace.Instance().addtoJList(workspace);
+						closeWindowAndClearPanel();
+					} else {
+						closeWindowAndClearPanel();
+						
+					}
+				} catch (SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
 				}
 				
 			}
@@ -311,6 +315,12 @@ public class MainFrame {
 		mainFrm.setVisible(true);
 	}
 	
+	public void checkPanelFirst() {
+		if(!(pnlDrawing.getShapeList() == null)) {
+			pnlDrawing.clearPanel();
+		}
+	}
+	
 	public void refreshScreen() {
 		mainFrm.repaint(); 
 	}
@@ -340,7 +350,7 @@ public class MainFrame {
 		return exit;
 	}
 	
-	private void closeWindowAndClearPanel() {
+	public void closeWindowAndClearPanel() {
 		mainFrm.dispose();
 		pnlDrawing.clearPanel();
 		LoadWorkspace.Instance().showWindow();

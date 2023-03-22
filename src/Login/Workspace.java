@@ -47,6 +47,10 @@ public class Workspace {
 		
 	}
 	
+	public Workspace(User user){
+		this.user = user;
+	}
+	
 	public Workspace(String workspaceName) {
 		this.workspaceName = workspaceName;
 	}
